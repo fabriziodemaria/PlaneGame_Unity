@@ -30,27 +30,26 @@ public class PlaneMovement : MonoBehaviour {
 			planescale.y -= fallingRate * Time.deltaTime;
 			transform.localScale = planescale;
 			if (transform.localScale.x <= 0) {
-				velocity = new Vector3(0,0,0);
-				GameObject.FindObjectOfType<Canvas>().GetComponent<LabelsManager> ().showGameOver ();
-				Destroy(GameObject.FindObjectOfType<CloudSpawner>());
+				velocity = new Vector3 (0, 0, 0);
+				GameObject.FindObjectOfType<Canvas> ().GetComponent<LabelsManager> ().showGameOver ();
+				Destroy (GameObject.FindObjectOfType<CloudSpawner> ());
 			}
-			return;
 		}
 
 		/* Handle lateral boundaries */
 		if ((transform.position.x < -lateralBoundaries && lateralForce.x < 0) || 
-		    (transform.position.x > lateralBoundaries && lateralForce.x > 0)) {
-			lateralForce = new Vector3();
+			(transform.position.x > lateralBoundaries && lateralForce.x > 0)) {
+			lateralForce = new Vector3 ();
 		} 
 
 		/* Handle lateral force and rotation */
 		transform.position += lateralForce * Time.deltaTime;
 		if (lateralForce.x > 0) {
-			transform.rotation = Quaternion.Euler(0, Mathf.Lerp(0, maxLateralRoll, lateralForce.x / maxLateralForce), 0);
+			transform.rotation = Quaternion.Euler (0, Mathf.Lerp (0, maxLateralRoll, lateralForce.x / maxLateralForce), 0);
 		} else if (lateralForce.x < 0) {
-			transform.rotation = Quaternion.Euler(0, -Mathf.Lerp(0, maxLateralRoll, -lateralForce.x / maxLateralForce), 0);
+			transform.rotation = Quaternion.Euler (0, -Mathf.Lerp (0, maxLateralRoll, -lateralForce.x / maxLateralForce), 0);
 		} else {
-			transform.rotation = Quaternion.Euler(0, 0, 0);
+			transform.rotation = Quaternion.Euler (0, 0, 0);
 		}
 	}
 

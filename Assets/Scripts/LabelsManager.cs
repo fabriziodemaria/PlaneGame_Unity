@@ -46,7 +46,7 @@ public class LabelsManager : MonoBehaviour {
 	
 	public void showGameOver () {
 		SCLabel.enabled = false;
-		GOLabel.text = "GAME OVER!\nScore: " + score.ToString ("F2");
+		GOLabel.text = "GAME OVER!\nMILES: " + score.ToString ("F2");
 		GOLabel.enabled = true;
 	}
 }
