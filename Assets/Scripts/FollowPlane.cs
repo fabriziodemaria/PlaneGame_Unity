@@ -21,10 +21,12 @@ public class FollowPlane : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		Vector3 pos = playerPlane.transform.position;
+		Quaternion rot = playerPlane.transform.rotation;
 		pos.z += 1;
 		pos.x += shadowOffsetX * (playerPlane.transform.localScale.x / initialScale);
 		pos.y += shadowOffsetY * (playerPlane.transform.localScale.x / initialScale);
 		transform.position = pos;
+		transform.rotation = rot;
 		transform.localScale = playerPlane.transform.localScale;
 	}
 }
