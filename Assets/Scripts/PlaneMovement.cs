@@ -18,7 +18,8 @@ public class PlaneMovement : MonoBehaviour {
 	private float lateralBoundaries;
 
 	/* View */
-	GameObject currentExplosion; //Needs a better place
+	private GameObject currentExplosion; //Needs a better place
+	private int explosionDirectionX;
 	
 	void Start () {
 		lateralBoundaries = Camera.main.orthographicSize / 2;
@@ -29,7 +30,14 @@ public class PlaneMovement : MonoBehaviour {
 
 		/* Handle dead trigger */
 		if (isDead && transform.localScale.x >= 0) {
-			currentExplosion.transform.position = transform.position;
+
+			/* Handle explosion graphics */
+			// Probably bettere elsewhere...
+			Vector3 expPos = currentExplosion.transform.position;
+			expPos.y = transform.position.y;
+			expPos.x = transform.position.x + explosionDirectionX * transform.localScale.x / 2;
+			currentExplosion.transform.position = expPos;
+
 			Vector3 planescale = transform.localScale; 
 			planescale.x -= fallingRate * Time.deltaTime;
 			planescale.y -= fallingRate * Time.deltaTime;
@@ -38,7 +46,7 @@ public class PlaneMovement : MonoBehaviour {
 				velocity = new Vector3 (0, 0, 0);
 				GameObject.FindObjectOfType<Canvas> ().GetComponent<LabelsManager> ().showGameOver ();
 				Destroy (GameObject.FindObjectOfType<CloudSpawner> ());
-				Destroy (currentExplosion);
+				currentExplosion.GetComponent<ParticleSystem>().emissionRate = 0;
 			}
 		}
 
@@ -78,7 +86,16 @@ public class PlaneMovement : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D collider) {
+		if (isDead == true)
+			return;
+
 		isDead = true;
-		currentExplosion = (GameObject)Instantiate(ExplosionPrefab, transform.position, transform.rotation);
+		Vector3 pos = transform.position;
+		if (collider.transform.position.x < transform.position.x)
+			explosionDirectionX = -1;
+		else 
+			explosionDirectionX = 1;
+		pos.x += explosionDirectionX * transform.localScale.x / 2;
+		currentExplosion = (GameObject)Instantiate(ExplosionPrefab, pos, transform.rotation);
 	}
 }
