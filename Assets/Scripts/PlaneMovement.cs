@@ -3,7 +3,8 @@ using System.Collections;
 using UnityEngine.UI;
 
 public class PlaneMovement : MonoBehaviour {
-	
+
+	public GameObject ExplosionPrefab; //Needs a better place
 	public Vector3 velocity;
 	public float maxLateralRoll;
 	public int maxLateralForce;
@@ -15,6 +16,9 @@ public class PlaneMovement : MonoBehaviour {
 	/* Physics */
 	private Vector3 lateralForce;
 	private float lateralBoundaries;
+
+	/* View */
+	GameObject currentExplosion; //Needs a better place
 	
 	void Start () {
 		lateralBoundaries = Camera.main.orthographicSize / 2;
@@ -25,6 +29,7 @@ public class PlaneMovement : MonoBehaviour {
 
 		/* Handle dead trigger */
 		if (isDead && transform.localScale.x >= 0) {
+			currentExplosion.transform.position = transform.position;
 			Vector3 planescale = transform.localScale; 
 			planescale.x -= fallingRate * Time.deltaTime;
 			planescale.y -= fallingRate * Time.deltaTime;
@@ -33,6 +38,7 @@ public class PlaneMovement : MonoBehaviour {
 				velocity = new Vector3 (0, 0, 0);
 				GameObject.FindObjectOfType<Canvas> ().GetComponent<LabelsManager> ().showGameOver ();
 				Destroy (GameObject.FindObjectOfType<CloudSpawner> ());
+				Destroy (currentExplosion);
 			}
 		}
 
@@ -73,5 +79,6 @@ public class PlaneMovement : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D collider) {
 		isDead = true;
+		currentExplosion = (GameObject)Instantiate(ExplosionPrefab, transform.position, transform.rotation);
 	}
 }
