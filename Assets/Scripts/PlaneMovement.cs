@@ -37,8 +37,8 @@ public class PlaneMovement : MonoBehaviour {
 		}
 
 		/* Handle lateral boundaries */
-		if ((transform.position.x < -lateralBoundaries && lateralForce.x < 0) || 
-			(transform.position.x > lateralBoundaries && lateralForce.x > 0)) {
+		if (!isDead && ((transform.position.x < -lateralBoundaries && lateralForce.x < 0) || 
+			(transform.position.x > lateralBoundaries && lateralForce.x > 0))) {
 			lateralForce = new Vector3 ();
 		} 
 
