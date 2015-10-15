@@ -16,10 +16,14 @@ public class PlaneMovement : MonoBehaviour {
 	/* Physics */
 	private Vector3 lateralForce;
 	private float lateralBoundaries;
+	private float currentRotation = 0.0f;
+	private bool lateralVelocityChanged = false;
 
 	/* View */
+	public int rotationSpeed;
 	private GameObject currentExplosion; //Needs a better place
 	private int explosionDirectionX;
+	private float rotationTimer = 0;
 	
 	void Start () {
 		lateralBoundaries = Camera.main.orthographicSize / 2;
@@ -42,6 +46,7 @@ public class PlaneMovement : MonoBehaviour {
 			planescale.x -= fallingRate * Time.deltaTime;
 			planescale.y -= fallingRate * Time.deltaTime;
 			transform.localScale = planescale;
+
 			if (transform.localScale.x <= 0) {
 				velocity = new Vector3 (0, 0, 0);
 				GameObject.FindObjectOfType<Canvas> ().GetComponent<LabelsManager> ().showGameOver ();
@@ -53,17 +58,28 @@ public class PlaneMovement : MonoBehaviour {
 		/* Handle lateral boundaries */
 		if (!isDead && ((transform.position.x < -lateralBoundaries && lateralForce.x < 0) || 
 			(transform.position.x > lateralBoundaries && lateralForce.x > 0))) {
+			lateralVelocityChanged = true;
 			lateralForce = new Vector3 ();
 		} 
 
 		/* Handle lateral force and rotation */
 		transform.position += lateralForce * Time.deltaTime;
+
+		if (lateralVelocityChanged) {
+			lateralVelocityChanged = false;
+			currentRotation = transform.rotation.y * 100;
+			rotationTimer = 0;
+		}
 		if (lateralForce.x > 0) {
-			transform.rotation = Quaternion.Euler (0, Mathf.Lerp (0, maxLateralRoll, lateralForce.x / maxLateralForce), 0);
+			rotationTimer += Time.deltaTime * rotationSpeed;
+			transform.rotation = Quaternion.Euler (0, Mathf.Lerp (currentRotation, Mathf.Lerp (0, -maxLateralRoll, lateralForce.x / maxLateralForce), rotationTimer), 0);
 		} else if (lateralForce.x < 0) {
-			transform.rotation = Quaternion.Euler (0, -Mathf.Lerp (0, maxLateralRoll, -lateralForce.x / maxLateralForce), 0);
+			rotationTimer += Time.deltaTime * rotationSpeed;
+			transform.rotation = Quaternion.Euler (0, Mathf.Lerp (currentRotation, Mathf.Lerp (0, maxLateralRoll, -lateralForce.x / maxLateralForce), rotationTimer), 0);
 		} else {
-			transform.rotation = Quaternion.Euler (0, 0, 0);
+			Debug.Log("Current rotation " + transform.rotation.y); 
+			rotationTimer += Time.deltaTime * rotationSpeed;
+			transform.rotation = Quaternion.Euler (0, Mathf.Lerp (currentRotation, 0, rotationTimer), 0);
 		}
 	}
 
@@ -75,12 +91,16 @@ public class PlaneMovement : MonoBehaviour {
 		if (Input.GetMouseButtonDown(0)) {
 			if (Input.mousePosition.x < Screen.width / 2) {
 				Debug.Log("Left " + Input.mousePosition.x);
-				if (lateralForce.x > -maxLateralForce && transform.position.x > -lateralBoundaries)
+				if (lateralForce.x > -maxLateralForce && transform.position.x > -lateralBoundaries) {
+					lateralVelocityChanged = true;
 					lateralForce.x--;
+				}
 			} else {
 				Debug.Log("Right " + Input.mousePosition.x);
-				if (lateralForce.x < maxLateralForce && transform.position.x < lateralBoundaries)
+				if (lateralForce.x < maxLateralForce && transform.position.x < lateralBoundaries) {
+					lateralVelocityChanged = true;
 					lateralForce.x++;
+				}
 			}
 		}
 	}
@@ -96,6 +116,6 @@ public class PlaneMovement : MonoBehaviour {
 		else 
 			explosionDirectionX = 1;
 		pos.x += explosionDirectionX * transform.localScale.x / 2;
-		currentExplosion = (GameObject)Instantiate(ExplosionPrefab, pos, transform.rotation);
+		currentExplosion = (GameObject)Instantiate(ExplosionPrefab, pos, Quaternion.Euler(0,0,0));
 	}
 }
