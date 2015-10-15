@@ -7,6 +7,7 @@ public class PlaneMovement : MonoBehaviour {
 	public GameObject ExplosionPrefab; //Needs a better place
 	public Vector3 velocity;
 	public float maxLateralRoll;
+	public float maxLateralYaw;
 	public int maxLateralForce;
 	public float fallingRate;
 
@@ -16,7 +17,8 @@ public class PlaneMovement : MonoBehaviour {
 	/* Physics */
 	private Vector3 lateralForce;
 	private float lateralBoundaries;
-	private float currentRotation = 0.0f;
+	private float currentRotationY = 0.0f;
+	private float currentRotationZ = 0.0f;
 	private bool lateralVelocityChanged = false;
 
 	/* View */
@@ -67,19 +69,24 @@ public class PlaneMovement : MonoBehaviour {
 
 		if (lateralVelocityChanged) {
 			lateralVelocityChanged = false;
-			currentRotation = transform.rotation.y * 100;
+			currentRotationY = transform.rotation.y * 100;
+			currentRotationZ = transform.rotation.z * 100;
 			rotationTimer = 0;
 		}
 		if (lateralForce.x > 0) {
 			rotationTimer += Time.deltaTime * rotationSpeed;
-			transform.rotation = Quaternion.Euler (0, Mathf.Lerp (currentRotation, Mathf.Lerp (0, -maxLateralRoll, lateralForce.x / maxLateralForce), rotationTimer), 0);
+			transform.rotation = Quaternion.Euler (0, 
+			                                       Mathf.Lerp (currentRotationY, Mathf.SmoothStep (0, -maxLateralRoll, lateralForce.x / maxLateralForce), rotationTimer), 
+			                                       Mathf.Lerp (currentRotationZ, Mathf.SmoothStep (0, -maxLateralYaw, lateralForce.x / maxLateralForce), rotationTimer));
 		} else if (lateralForce.x < 0) {
 			rotationTimer += Time.deltaTime * rotationSpeed;
-			transform.rotation = Quaternion.Euler (0, Mathf.Lerp (currentRotation, Mathf.Lerp (0, maxLateralRoll, -lateralForce.x / maxLateralForce), rotationTimer), 0);
+			transform.rotation = Quaternion.Euler (0, 
+			                                       Mathf.Lerp (currentRotationY, Mathf.SmoothStep (0, maxLateralRoll, -lateralForce.x / maxLateralForce), rotationTimer), 
+			                                       Mathf.Lerp (currentRotationZ, Mathf.SmoothStep (0, maxLateralYaw, -lateralForce.x / maxLateralForce), rotationTimer));
 		} else {
 			Debug.Log("Current rotation " + transform.rotation.y); 
 			rotationTimer += Time.deltaTime * rotationSpeed;
-			transform.rotation = Quaternion.Euler (0, Mathf.Lerp (currentRotation, 0, rotationTimer), 0);
+			transform.rotation = Quaternion.Euler (0, Mathf.SmoothStep (currentRotationY, 0, rotationTimer), Mathf.SmoothStep (currentRotationZ, 0, rotationTimer));
 		}
 	}
 
