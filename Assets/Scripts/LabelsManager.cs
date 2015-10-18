@@ -54,7 +54,7 @@ public class LabelsManager : MonoBehaviour {
 		if (score > PlayerPrefs.GetFloat("highscore", 0)) {
 			highscore = score;
 			PlayerPrefs.SetFloat("highscore", highscore);
-			GOLabel.text = "NEW RECORD!\nNEW HIGHSCORE: " + highscore.ToString("F2");
+			GOLabel.text = "NEW RECORD!\nHIGHSCORE: " + highscore.ToString("F2");
 		} else {
 			GOLabel.text = "GAME OVER!\nMILES: " + score.ToString ("F2") + "\nHIGHSCORE: " + highscore.ToString("F2");
 		}
