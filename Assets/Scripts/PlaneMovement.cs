@@ -32,10 +32,11 @@ public class PlaneMovement : MonoBehaviour {
 	}
 
 	void FixedUpdate () {
+
 		/* Forward speed */
 		transform.position += velocity * Time.deltaTime;
-
-		/* Handle dead trigger */
+		
+			/* Handle dead trigger */
 		if (isDead && transform.localScale.x >= 0) {
 
 			/* Handle explosion graphics */
