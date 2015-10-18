@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class PlaneMovement : MonoBehaviour {
 
-	public GameObject ExplosionPrefab; //Needs a better place
+	public GameObject ExplosionPrefab; //Needs a better place TODO
 	public Vector3 velocity;
 	public float maxLateralRoll;
 	public float maxLateralYaw;
@@ -25,7 +25,7 @@ public class PlaneMovement : MonoBehaviour {
 
 	/* View */
 	public int rotationSpeed;
-	private GameObject[] currentExplosions; //Needs a better place
+	private GameObject[] currentExplosions; //Needs a better place TODO
 	private int[] explosionDirectionX;
 	private float rotationTimer = 0;
 	
@@ -42,7 +42,7 @@ public class PlaneMovement : MonoBehaviour {
 
 		for (int i = 0; i < currentHits; i++) {
 			/* Handle explosion graphics */
-			// Probably bettere elsewhere...
+			// Probably bettere elsewhere... TODO
 			if (currentExplosions[i] != null) {
 				Vector3 expPos = currentExplosions[i].transform.position;
 				expPos.y = transform.position.y;
@@ -80,6 +80,7 @@ public class PlaneMovement : MonoBehaviour {
 		/* Handle lateral force and rotation */
 		if (lateralForce.x != 0) {
 			transform.position += lateralForce * Time.deltaTime;
+			/* Dynamic velocity change according to rotation TODO */
 //			float instantRatio = Mathf.Lerp (0, 1, Mathf.Abs(currentRotationY) / (Mathf.Lerp (0, maxLateralRoll, (Mathf.Abs(lateralForce.x) / maxLateralForce))));
 //			Debug.Log("Current ratio " + instantRatio);
 //			Debug.Log("Current subratio " + (Mathf.Abs(currentRotationY) / (Mathf.Lerp (0, maxLateralRoll, (Mathf.Abs(lateralForce.x) / maxLateralForce)))));
@@ -141,7 +142,6 @@ public class PlaneMovement : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D collider) {
-
 		if (isDead == true)
 			return;
 
@@ -153,7 +153,6 @@ public class PlaneMovement : MonoBehaviour {
 			explosionDirectionX[currentHits-1] = 1;
 		pos.x += explosionDirectionX[currentHits-1] * transform.localScale.x / 2;
 		currentExplosions.SetValue((GameObject)Instantiate(ExplosionPrefab, pos, Quaternion.Euler(-90,0,0)), currentHits-1);
-
 		if (currentHits >= maxLifes)
 			isDead = true;
 	}
