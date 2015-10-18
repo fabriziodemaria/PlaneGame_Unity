@@ -13,6 +13,8 @@ public class PlaneMovement : MonoBehaviour {
 
 	/* Logic */
 	private bool isDead = false;
+	public int maxLifes = 2;
+	private int currentHits = 0;
 
 	/* Physics */
 	private Vector3 lateralForce;
@@ -23,29 +25,34 @@ public class PlaneMovement : MonoBehaviour {
 
 	/* View */
 	public int rotationSpeed;
-	private GameObject currentExplosion; //Needs a better place
-	private int explosionDirectionX;
+	private GameObject[] currentExplosions; //Needs a better place
+	private int[] explosionDirectionX;
 	private float rotationTimer = 0;
 	
 	void Start () {
 		lateralBoundaries = Camera.main.orthographicSize / 2;
+		currentExplosions = new GameObject[maxLifes];
+		explosionDirectionX = new int[maxLifes];
 	}
 
 	void FixedUpdate () {
 
 		/* Forward speed */
 		transform.position += velocity * Time.deltaTime;
-		
-			/* Handle dead trigger */
-		if (isDead && transform.localScale.x >= 0) {
 
+		for (int i = 0; i < currentHits; i++) {
 			/* Handle explosion graphics */
 			// Probably bettere elsewhere...
-			Vector3 expPos = currentExplosion.transform.position;
-			expPos.y = transform.position.y;
-			expPos.x = transform.position.x + explosionDirectionX * transform.localScale.x / 2;
-			currentExplosion.transform.position = expPos;
-
+			if (currentExplosions[i] != null) {
+				Vector3 expPos = currentExplosions[i].transform.position;
+				expPos.y = transform.position.y;
+				expPos.x = transform.position.x + explosionDirectionX[i] * transform.localScale.x / 2;
+				currentExplosions[i].transform.position = expPos;
+			}
+		}
+		
+		/* Handle dead trigger */
+		if (isDead && transform.localScale.x >= 0) {
 			Vector3 planescale = transform.localScale; 
 			planescale.x -= fallingRate * Time.deltaTime;
 			planescale.y -= fallingRate * Time.deltaTime;
@@ -56,7 +63,10 @@ public class PlaneMovement : MonoBehaviour {
 				GameObject.FindObjectOfType<Canvas> ().GetComponent<LabelsManager> ().showGameOver ();
 				Destroy (GameObject.FindObjectOfType<CloudSpawner> ());
 				Destroy (GameObject.FindObjectOfType<BirdSpanwer> ());
-				currentExplosion.GetComponent<ParticleSystem>().emissionRate = 0;
+				for (int i = 0; i < maxLifes; i++) {
+					currentExplosions[i].GetComponent<ParticleSystem>().emissionRate = 0;
+				}
+				return;
 			}
 		}
 
@@ -131,16 +141,20 @@ public class PlaneMovement : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D collider) {
+
 		if (isDead == true)
 			return;
 
-		isDead = true;
+		currentHits++;
 		Vector3 pos = transform.position;
 		if (collider.transform.position.x < transform.position.x)
-			explosionDirectionX = -1;
+			explosionDirectionX[currentHits-1] = -1;
 		else 
-			explosionDirectionX = 1;
-		pos.x += explosionDirectionX * transform.localScale.x / 2;
-		currentExplosion = (GameObject)Instantiate(ExplosionPrefab, pos, Quaternion.Euler(0,0,0));
+			explosionDirectionX[currentHits-1] = 1;
+		pos.x += explosionDirectionX[currentHits-1] * transform.localScale.x / 2;
+		currentExplosions.SetValue((GameObject)Instantiate(ExplosionPrefab, pos, Quaternion.Euler(-90,0,0)), currentHits-1);
+
+		if (currentHits >= maxLifes)
+			isDead = true;
 	}
 }
