@@ -142,6 +142,11 @@ public class PlaneMovement : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D collider) {
+		/* Kill the birds */
+		if (collider.tag == "Bird") {
+			Destroy (collider.gameObject);
+		}
+
 		if (isDead == true)
 			return;
 
