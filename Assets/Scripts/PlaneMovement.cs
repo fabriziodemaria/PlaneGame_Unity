@@ -100,22 +100,30 @@ public class PlaneMovement : MonoBehaviour {
 	}
 
 	void Update() {
-		if (Input.GetMouseButtonUp(0) && GetComponent<PlaneMovement> ().velocity.y == 0) {
+		if ((Input.GetMouseButtonUp(0) || Input.GetKeyDown(KeyCode.Space)) && GetComponent<PlaneMovement> ().velocity.y == 0) {
 			Application.LoadLevel( Application.loadedLevel);
 		}
 
-		if (Input.GetMouseButtonDown(0)) {
-			if (Input.mousePosition.x < Screen.width / 2) {
-				Debug.Log("Left " + Input.mousePosition.x);
-				if (lateralForce.x > -maxLateralForce && transform.position.x > -lateralBoundaries) {
-					lateralVelocityChanged = true;
-					lateralForce.x--;
-				}
-			} else {
-				Debug.Log("Right " + Input.mousePosition.x);
-				if (lateralForce.x < maxLateralForce && transform.position.x < lateralBoundaries) {
-					lateralVelocityChanged = true;
-					lateralForce.x++;
+		if (Input.GetKeyDown(KeyCode.LeftArrow)) {
+			lateralVelocityChanged = true;
+			lateralForce.x--;
+		} else if (Input.GetKeyDown(KeyCode.RightArrow)) {
+			lateralVelocityChanged = true;
+			lateralForce.x++;
+		} else {
+			if (Input.GetMouseButtonDown(0)) {
+				if (Input.mousePosition.x < Screen.width / 2) {
+					Debug.Log("Left " + Input.mousePosition.x);
+					if (lateralForce.x > -maxLateralForce && transform.position.x > -lateralBoundaries) {
+						lateralVelocityChanged = true;
+						lateralForce.x--;
+					}
+				} else {
+					Debug.Log("Right " + Input.mousePosition.x);
+					if (lateralForce.x < maxLateralForce && transform.position.x < lateralBoundaries) {
+						lateralVelocityChanged = true;
+						lateralForce.x++;
+					}
 				}
 			}
 		}
