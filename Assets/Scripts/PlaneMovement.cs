@@ -31,7 +31,7 @@ public class PlaneMovement : MonoBehaviour {
 	private float rotationTimer = 0;
 
 	void Awake () {
-		Application.targetFrameRate = 60;
+		Application.targetFrameRate = 300;
 	}
 	
 	void Start () {
