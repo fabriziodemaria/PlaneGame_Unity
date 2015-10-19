@@ -15,7 +15,6 @@ public class BirdSpanwer : MonoBehaviour {
 			nextS = sDealy;
 			Vector3 pos = transform.position;
 			pos.x += Random.Range(-Camera.main.orthographicSize / 3, Camera.main.orthographicSize / 3);
-			Debug.Log("pos x " + pos.x);
 			Instantiate(BirdPrefab, pos, transform.rotation);
 			pos.x += 0.3f;
 			pos.y += 0.3f;

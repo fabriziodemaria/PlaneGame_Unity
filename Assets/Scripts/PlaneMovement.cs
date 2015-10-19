@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class PlaneMovement : MonoBehaviour {
 
 	public GameObject ExplosionPrefab; //Needs a better place TODO
+	public GameObject FocalExplosionPrefab;
 	public Vector3 velocity;
 	public float maxLateralRoll;
 	public float maxLateralYaw;
@@ -28,6 +29,10 @@ public class PlaneMovement : MonoBehaviour {
 	private GameObject[] currentExplosions; //Needs a better place TODO
 	private int[] explosionDirectionX;
 	private float rotationTimer = 0;
+
+	void Awake () {
+		Application.targetFrameRate = 60;
+	}
 	
 	void Start () {
 		lateralBoundaries = Camera.main.orthographicSize / 2;
@@ -63,6 +68,7 @@ public class PlaneMovement : MonoBehaviour {
 				GameObject.FindObjectOfType<Canvas> ().GetComponent<LabelsManager> ().showGameOver ();
 				Destroy (GameObject.FindObjectOfType<CloudSpawner> ());
 				Destroy (GameObject.FindObjectOfType<BirdSpanwer> ());
+				Destroy (GameObject.FindObjectOfType<GenerateBox> ());
 				for (int i = 0; i < maxLifes; i++) {
 					currentExplosions[i].GetComponent<ParticleSystem>().emissionRate = 0;
 				}
@@ -125,13 +131,11 @@ public class PlaneMovement : MonoBehaviour {
 		} else {
 			if (Input.GetMouseButtonDown(0)) {
 				if (Input.mousePosition.x < Screen.width / 2) {
-					Debug.Log("Left " + Input.mousePosition.x);
 					if (lateralForce.x > -maxLateralForce && transform.position.x > -lateralBoundaries) {
 						lateralVelocityChanged = true;
 						lateralForce.x--;
 					}
 				} else {
-					Debug.Log("Right " + Input.mousePosition.x);
 					if (lateralForce.x < maxLateralForce && transform.position.x < lateralBoundaries) {
 						lateralVelocityChanged = true;
 						lateralForce.x++;
@@ -145,6 +149,11 @@ public class PlaneMovement : MonoBehaviour {
 		/* Kill the birds */
 		if (collider.tag == "Bird") {
 			Destroy (collider.gameObject);
+		} else if (isDead == false && collider.tag == "Wrench") {
+			Destroy (collider.gameObject);
+			if (currentHits > 0)
+				currentHits--;
+			return;
 		}
 
 		if (isDead == true)
@@ -157,6 +166,7 @@ public class PlaneMovement : MonoBehaviour {
 		else 
 			explosionDirectionX[currentHits-1] = 1;
 		pos.x += explosionDirectionX[currentHits-1] * transform.localScale.x / 2;
+		Instantiate(FocalExplosionPrefab, pos, Quaternion.Euler(0,180,180));
 		currentExplosions.SetValue((GameObject)Instantiate(ExplosionPrefab, pos, Quaternion.Euler(-90,0,0)), currentHits-1);
 		if (currentHits >= maxLifes)
 			isDead = true;
