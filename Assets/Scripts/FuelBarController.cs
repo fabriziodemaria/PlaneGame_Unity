@@ -25,6 +25,11 @@ public class FuelBarController : MonoBehaviour {
 			planeController.killPlane();
 		if (planeController.velocity.y == 0)
 			return;
+		Color barColor = Color.white;
+		if (fuelBarImage.fillAmount <= 0.3f)
+			barColor = Color.red;
+		barColor.a = 0.6f;
+		fuelBarImage.color = barColor;
 		fuelBarImage.fillAmount -= Time.deltaTime * fuelConsumptiom;
 	}
 
