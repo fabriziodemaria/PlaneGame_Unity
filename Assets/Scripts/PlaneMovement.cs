@@ -159,8 +159,10 @@ public class PlaneMovement : MonoBehaviour {
 		} else if (isDead == false && collider.tag == "Wrench") {
 			Destroy (collider.gameObject);
 			fuelBarControl.moreFuel();
-			if (currentHits > 0)
+			if (currentHits > 0) {
 				currentHits--;
+				currentExplosions[currentHits].GetComponent<ParticleSystem>().emissionRate = 0;
+			}
 			return;
 		}
 
