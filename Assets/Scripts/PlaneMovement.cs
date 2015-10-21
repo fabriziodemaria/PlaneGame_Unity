@@ -16,6 +16,7 @@ public class PlaneMovement : MonoBehaviour {
 	private bool isDead = false;
 	public int maxLifes = 2;
 	private int currentHits = 0;
+	private FuelBarController fuelBarControl;
 
 	/* Physics */
 	private Vector3 lateralForce;
@@ -38,6 +39,11 @@ public class PlaneMovement : MonoBehaviour {
 		lateralBoundaries = Camera.main.orthographicSize / 2;
 		currentExplosions = new GameObject[maxLifes];
 		explosionDirectionX = new int[maxLifes];
+		fuelBarControl = GameObject.FindObjectOfType<FuelBarController>();
+		if (fuelBarControl == null) {
+			Debug.LogError("Fuel bar not found!");
+			return;
+		}
 	}
 
 	void FixedUpdate () {
@@ -55,7 +61,7 @@ public class PlaneMovement : MonoBehaviour {
 				currentExplosions[i].transform.position = expPos;
 			}
 		}
-		
+
 		/* Handle dead trigger */
 		if (isDead && transform.localScale.x >= 0) {
 			Vector3 planescale = transform.localScale; 
@@ -70,7 +76,8 @@ public class PlaneMovement : MonoBehaviour {
 				Destroy (GameObject.FindObjectOfType<BirdSpanwer> ());
 				Destroy (GameObject.FindObjectOfType<GenerateBox> ());
 				for (int i = 0; i < maxLifes; i++) {
-					currentExplosions[i].GetComponent<ParticleSystem>().emissionRate = 0;
+					if (currentExplosions[i] != null)
+						currentExplosions[i].GetComponent<ParticleSystem>().emissionRate = 0;
 				}
 				return;
 			}
@@ -151,6 +158,7 @@ public class PlaneMovement : MonoBehaviour {
 			Destroy (collider.gameObject);
 		} else if (isDead == false && collider.tag == "Wrench") {
 			Destroy (collider.gameObject);
+			fuelBarControl.moreFuel();
 			if (currentHits > 0)
 				currentHits--;
 			return;
@@ -170,5 +178,9 @@ public class PlaneMovement : MonoBehaviour {
 		currentExplosions.SetValue((GameObject)Instantiate(ExplosionPrefab, pos, Quaternion.Euler(-90,0,0)), currentHits-1);
 		if (currentHits >= maxLifes)
 			isDead = true;
+	}
+
+	public void killPlane() {
+		isDead = true;
 	}
 }
