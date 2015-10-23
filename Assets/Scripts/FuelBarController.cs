@@ -6,7 +6,6 @@ public class FuelBarController : MonoBehaviour {
 
 	public Image fuelBarImage;
 	public float fuelConsumptiom;
-
 	private PlaneMovement planeController;
 
 	// Use this for initialization
@@ -26,8 +25,9 @@ public class FuelBarController : MonoBehaviour {
 		if (planeController.velocity.y == 0)
 			return;
 		Color barColor = Color.white;
-		if (fuelBarImage.fillAmount <= 0.3f)
+		if (fuelBarImage.fillAmount <= 0.3f) {
 			barColor = Color.red;
+		}
 		barColor.a = 0.6f;
 		fuelBarImage.color = barColor;
 		fuelBarImage.fillAmount -= Time.deltaTime * fuelConsumptiom;

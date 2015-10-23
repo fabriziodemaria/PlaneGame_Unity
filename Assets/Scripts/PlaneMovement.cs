@@ -53,9 +53,9 @@ public class PlaneMovement : MonoBehaviour {
 	}
 
 	void FixedUpdate () {
-
 		/* Forward speed */
 		transform.position += velocity * Time.deltaTime;
+		transform.position += lateralForce * Time.deltaTime;
 
 		for (int i = 0; i < currentHits; i++) {
 			/* Handle explosion graphics */
@@ -75,23 +75,22 @@ public class PlaneMovement : MonoBehaviour {
 			planescale.y -= fallingRate * Time.deltaTime;
 			transform.localScale = planescale;
 
-			if (transform.localScale.x <= 0) {
-				velocity = new Vector3 (0, 0, 0);
-
-				//Splash effect
+			if (planescale.x <=0)
 				Instantiate(SplashFocalPrefab, transform.position, Quaternion.Euler(0,180,180));
-				
+			return;
+		}
 
-				GameObject.FindObjectOfType<Canvas> ().GetComponent<LabelsManager> ().showGameOver ();
-				Destroy (GameObject.FindObjectOfType<CloudSpawner> ());
-				Destroy (GameObject.FindObjectOfType<BirdSpanwer> ());
-				Destroy (GameObject.FindObjectOfType<GenerateBox> ());
-				for (int i = 0; i < maxLifes; i++) {
-					if (currentExplosions[i] != null)
-						currentExplosions[i].GetComponent<ParticleSystem>().emissionRate = 0;
-				}
-				return;
+		if (isDead && transform.localScale.x <= 0) {
+			velocity = new Vector3 (0, 0, 0);
+			GameObject.FindObjectOfType<Canvas> ().GetComponent<LabelsManager> ().showGameOver ();
+			Destroy (GameObject.FindObjectOfType<CloudSpawner> ());
+			Destroy (GameObject.FindObjectOfType<BirdSpanwer> ());
+			Destroy (GameObject.FindObjectOfType<GenerateBox> ());
+			for (int i = 0; i < maxLifes; i++) {
+				if (currentExplosions[i] != null)
+					currentExplosions[i].GetComponent<ParticleSystem>().emissionRate = 0;
 			}
+			return;
 		}
 
 		/* Handle lateral boundaries */
@@ -102,8 +101,7 @@ public class PlaneMovement : MonoBehaviour {
 		} 
 
 		/* Handle lateral force and rotation */
-		if (lateralForce.x != 0) {
-			transform.position += lateralForce * Time.deltaTime;
+//		if (lateralForce.x != 0) {
 			/* Dynamic velocity change according to rotation TODO */
 //			float instantRatio = Mathf.Lerp (0, 1, Mathf.Abs(currentRotationY) / (Mathf.Lerp (0, maxLateralRoll, (Mathf.Abs(lateralForce.x) / maxLateralForce))));
 //			Debug.Log("Current ratio " + instantRatio);
@@ -111,7 +109,7 @@ public class PlaneMovement : MonoBehaviour {
 //			float instantLateralForce = lateralForce.x * instantRatio;
 //			Vector3 instantForce = new Vector3(instantLateralForce, lateralForce.y, lateralForce.z);
 //			transform.position += instantForce * Time.deltaTime;
-		}
+//		}
 
 		if (lateralVelocityChanged) {
 			lateralVelocityChanged = false;
@@ -119,6 +117,7 @@ public class PlaneMovement : MonoBehaviour {
 			currentRotationZ = transform.rotation.z * 100;
 			rotationTimer = 0;
 		}
+
 		if (lateralForce.x > 0) {
 			rotationTimer += Time.deltaTime * rotationSpeed;
 			transform.rotation = Quaternion.Euler (0, 
@@ -140,20 +139,19 @@ public class PlaneMovement : MonoBehaviour {
 			Application.LoadLevel( Application.loadedLevel);
 		}
 
+		if (isDead) return;
+
 		if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetMouseButtonDown(0)) {
 			clicked = true;
 			clickTime = Time.time;
 
 			if (Input.GetKeyDown(KeyCode.LeftArrow)) {
 				clickPos = 10;
-				handlePlayerInput(clickPos, false);
 			} else if (Input.GetKeyDown(KeyCode.RightArrow)) {
 				clickPos = Screen.width - 10;
-				handlePlayerInput(clickPos, false);
 			} else {
 				clickPos = Input.mousePosition.x;
 			}
-
 			handlePlayerInput(clickPos, false);
 		}
 
