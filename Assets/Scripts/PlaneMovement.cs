@@ -152,7 +152,7 @@ public class PlaneMovement : MonoBehaviour {
 		}
 
 		if (clicked && (Time.time - clickTime) > LongPressSensitivity) {
-			if (Input.GetMouseButtonDown(0))
+			if (Input.GetMouseButton(0))
 				handlePlayerInput(Input.mousePosition.x, true);
 			else 
 				handlePlayerInput(clickPos, true);
