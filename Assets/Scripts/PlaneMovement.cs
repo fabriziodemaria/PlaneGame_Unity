@@ -6,6 +6,7 @@ public class PlaneMovement : MonoBehaviour {
 
 	public GameObject ExplosionPrefab; //Needs a better place TODO
 	public GameObject FocalExplosionPrefab;
+	public GameObject SplashFocalPrefab;
 	public Vector3 velocity;
 	public float maxLateralRoll;
 	public float maxLateralYaw;
@@ -76,6 +77,11 @@ public class PlaneMovement : MonoBehaviour {
 
 			if (transform.localScale.x <= 0) {
 				velocity = new Vector3 (0, 0, 0);
+
+				//Splash effect
+				Instantiate(SplashFocalPrefab, transform.position, Quaternion.Euler(0,180,180));
+				
+
 				GameObject.FindObjectOfType<Canvas> ().GetComponent<LabelsManager> ().showGameOver ();
 				Destroy (GameObject.FindObjectOfType<CloudSpawner> ());
 				Destroy (GameObject.FindObjectOfType<BirdSpanwer> ());
