@@ -11,12 +11,16 @@ public class PlaneMovement : MonoBehaviour {
 	public float maxLateralYaw;
 	public int maxLateralForce;
 	public float fallingRate;
+	public float LongPressSensitivity;
 
 	/* Logic */
 	private bool isDead = false;
 	public int maxLifes = 2;
 	private int currentHits = 0;
 	private FuelBarController fuelBarControl;
+	private bool clicked;
+	private float clickTime;
+	private float clickPos;
 
 	/* Physics */
 	private Vector3 lateralForce;
@@ -28,6 +32,7 @@ public class PlaneMovement : MonoBehaviour {
 	/* View */
 	public int rotationSpeed;
 	private GameObject[] currentExplosions; //Needs a better place TODO
+	private GameObject smokeParticles;
 	private int[] explosionDirectionX;
 	private float rotationTimer = 0;
 
@@ -129,25 +134,52 @@ public class PlaneMovement : MonoBehaviour {
 			Application.LoadLevel( Application.loadedLevel);
 		}
 
-		if (Input.GetKeyDown(KeyCode.LeftArrow)) {
-			lateralVelocityChanged = true;
-			lateralForce.x--;
-		} else if (Input.GetKeyDown(KeyCode.RightArrow)) {
-			lateralVelocityChanged = true;
-			lateralForce.x++;
+		if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetMouseButtonDown(0)) {
+			clicked = true;
+			clickTime = Time.time;
+
+			if (Input.GetKeyDown(KeyCode.LeftArrow)) {
+				clickPos = 10;
+				handlePlayerInput(clickPos, false);
+			} else if (Input.GetKeyDown(KeyCode.RightArrow)) {
+				clickPos = Screen.width - 10;
+				handlePlayerInput(clickPos, false);
+			} else {
+				clickPos = Input.mousePosition.x;
+			}
+
+			handlePlayerInput(clickPos, false);
+		}
+
+		if (clicked && (Time.time - clickTime) > LongPressSensitivity) {
+			if (Input.GetMouseButtonDown(0))
+				handlePlayerInput(Input.mousePosition.x, true);
+			else 
+				handlePlayerInput(clickPos, true);
+			clicked=false;
+		}
+
+		if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.RightArrow) || Input.GetMouseButtonUp(0)) {
+			clicked = false;
+		}
+	}
+
+	void handlePlayerInput(float posX, bool longPress) {
+		if (posX < Screen.width / 2) {
+			if (lateralForce.x > -maxLateralForce && transform.position.x > -lateralBoundaries) {
+				lateralVelocityChanged = true;
+				if (longPress)
+					lateralForce.x = -maxLateralForce;
+				else
+					lateralForce.x--;
+			}
 		} else {
-			if (Input.GetMouseButtonDown(0)) {
-				if (Input.mousePosition.x < Screen.width / 2) {
-					if (lateralForce.x > -maxLateralForce && transform.position.x > -lateralBoundaries) {
-						lateralVelocityChanged = true;
-						lateralForce.x--;
-					}
-				} else {
-					if (lateralForce.x < maxLateralForce && transform.position.x < lateralBoundaries) {
-						lateralVelocityChanged = true;
-						lateralForce.x++;
-					}
-				}
+			if (lateralForce.x < maxLateralForce && transform.position.x < lateralBoundaries) {
+				lateralVelocityChanged = true;
+				if (longPress)
+					lateralForce.x = maxLateralForce;
+				else
+					lateralForce.x++;
 			}
 		}
 	}
