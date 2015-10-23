@@ -185,10 +185,7 @@ public class PlaneMovement : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D collider) {
-		/* Kill the birds */
-		if (collider.tag == "Bird") {
-			Destroy (collider.gameObject);
-		} else if (isDead == false && collider.tag == "Wrench") {
+		if (isDead == false && collider.tag == "Wrench") {
 			Destroy (collider.gameObject);
 			fuelBarControl.moreFuel();
 			if (currentHits > 0) {
