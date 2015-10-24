@@ -6,7 +6,7 @@ public class CloudsVelocity : MonoBehaviour {
 	public Vector3 cloudSpeed;
 	
 	void Start () {
-		cloudSpeed.y -= Random.Range(0.0f,2.0f);
+		cloudSpeed.y -= Random.Range(0.0f,1.8f);
 	}
 	// Update is called once per frame
 	void Update () {

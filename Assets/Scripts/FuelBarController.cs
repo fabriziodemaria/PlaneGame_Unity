@@ -7,6 +7,8 @@ public class FuelBarController : MonoBehaviour {
 	public Image fuelBarImage;
 	public float fuelConsumptiom;
 	private PlaneMovement planeController;
+	private Text NLabel;
+	private bool isLow;
 
 	// Use this for initialization
 	void Start () {
@@ -16,17 +18,36 @@ public class FuelBarController : MonoBehaviour {
 			Debug.LogError("No plane found!");
 			return;
 		}
+
+		
+		NLabel = GameObject.FindGameObjectWithTag ("NotificationLabel").GetComponent<Text>();
+		if (NLabel == null) {
+			Debug.LogError("No Notification label has been found!");
+			return;
+		}
+		NLabel.text = "";
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if (fuelBarImage.fillAmount <= 0)
 			planeController.killPlane();
-		if (planeController.velocity.y == 0)
+		if (planeController.velocity.y == 0) {
+			NLabel.text = "";
 			return;
+		}
 		Color barColor = Color.white;
 		if (fuelBarImage.fillAmount <= 0.3f) {
+			if (!isLow) {
+				isLow = true;
+				NLabel.text = "LOW FUEL";
+			}
 			barColor = Color.red;
+		} else {
+			if (isLow) {
+				isLow = false;
+				NLabel.text = "";
+			}
 		}
 		barColor.a = 0.6f;
 		fuelBarImage.color = barColor;

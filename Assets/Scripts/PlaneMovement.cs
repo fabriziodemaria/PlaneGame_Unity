@@ -36,6 +36,7 @@ public class PlaneMovement : MonoBehaviour {
 	private GameObject smokeParticles;
 	private int[] explosionDirectionX;
 	private float rotationTimer = 0;
+	private int moviolaFrames;
 
 	void Awake () {
 		Application.targetFrameRate = 300;
@@ -135,6 +136,14 @@ public class PlaneMovement : MonoBehaviour {
 	}
 
 	void Update() {
+
+		if (moviolaFrames > 0) {
+			moviolaFrames--;
+			if (moviolaFrames == 0) {
+				Time.timeScale = 1;
+			}
+		}
+
 		if ((Input.GetMouseButtonUp(0) || Input.GetKeyDown(KeyCode.Space)) && GetComponent<PlaneMovement> ().velocity.y == 0) {
 			Application.LoadLevel( Application.loadedLevel);
 		}
@@ -212,10 +221,12 @@ public class PlaneMovement : MonoBehaviour {
 		Instantiate(FocalExplosionPrefab, pos, Quaternion.Euler(0,180,180));
 		currentExplosions.SetValue((GameObject)Instantiate(ExplosionPrefab, pos, Quaternion.Euler(-90,0,0)), currentHits-1);
 		if (currentHits >= maxLifes)
-			isDead = true;
+			killPlane();
 	}
 
 	public void killPlane() {
+		Time.timeScale = 0.1f;
+		moviolaFrames = 100;
 		isDead = true;
 	}
 }

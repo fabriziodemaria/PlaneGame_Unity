@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class LabelsManager : MonoBehaviour {
 
-	public GameObject playerPlane;
+	private GameObject playerPlane;
 
 	private float score = 0;
 	private float scoreOffset;
