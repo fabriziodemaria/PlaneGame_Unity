@@ -30,12 +30,19 @@ public class FuelBarController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (fuelBarImage.fillAmount <= 0)
-			planeController.killPlane();
+
 		if (planeController.velocity.y == 0) {
 			NLabel.text = "";
 			return;
 		}
+
+		if (planeController.isGameOver()) {
+			return;
+		}
+		
+		if (fuelBarImage.fillAmount <= 0)
+			planeController.killPlane();
+
 		Color barColor = Color.white;
 		if (fuelBarImage.fillAmount <= 0.3f) {
 			if (!isLow) {

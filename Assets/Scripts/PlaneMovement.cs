@@ -229,4 +229,8 @@ public class PlaneMovement : MonoBehaviour {
 		moviolaFrames = 100;
 		isDead = true;
 	}
+
+	public bool isGameOver() {
+		return isDead;
+	}
 }
