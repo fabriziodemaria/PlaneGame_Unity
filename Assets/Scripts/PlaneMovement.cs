@@ -18,6 +18,8 @@ public class PlaneMovement : MonoBehaviour {
 	private bool isDead = false;
 	public int maxLifes = 2;
 	private int currentHits = 0;
+	private bool currentHitLeft = false;
+	private bool currentHitRight = false;
 	private FuelBarController fuelBarControl;
 	private bool clicked;
 	private float clickTime;
@@ -203,23 +205,45 @@ public class PlaneMovement : MonoBehaviour {
 			fuelBarControl.moreFuel();
 			if (currentHits > 0) {
 				currentHits--;
+				currentHitLeft = false;
+				currentHitRight = false;
 				currentExplosions[currentHits].GetComponent<ParticleSystem>().emissionRate = 0;
 			}
 			return;
 		}
 
-		if (isDead == true)
-			return;
+		if (isDead) return;
 
-		currentHits++;
+		bool increaseHit = false;
+		if (collider.transform.position.x < transform.position.x) {
+			if (currentHitLeft == false) {
+				explosionDirectionX[currentHits] = -1;
+				currentHitLeft = true;
+				increaseHit = true;
+			}
+		} else { 
+			if (currentHitRight == false) {
+				explosionDirectionX[currentHits] = 1;
+				currentHitRight = true;
+				increaseHit = true;
+			}
+		}
+
+		//Return if the wing was already hit
+		if (!increaseHit) {
+			return;
+		}
+
 		Vector3 pos = transform.position;
-		if (collider.transform.position.x < transform.position.x)
-			explosionDirectionX[currentHits-1] = -1;
-		else 
-			explosionDirectionX[currentHits-1] = 1;
-		pos.x += explosionDirectionX[currentHits-1] * transform.localScale.x / 2;
+		pos.x += explosionDirectionX[currentHits] * transform.localScale.x / 2;
 		Instantiate(FocalExplosionPrefab, pos, Quaternion.Euler(0,180,180));
-		currentExplosions.SetValue((GameObject)Instantiate(ExplosionPrefab, pos, Quaternion.Euler(-90,0,0)), currentHits-1);
+
+		//Check current total hits
+		currentExplosions.SetValue((GameObject)Instantiate(ExplosionPrefab, pos, Quaternion.Euler(-90,0,0)), currentHits);
+
+		// Move to the next position for the explosions array and logic checks
+		currentHits++;
+
 		if (currentHits >= maxLifes)
 			killPlane();
 	}

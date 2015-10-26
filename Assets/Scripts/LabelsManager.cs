@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class LabelsManager : MonoBehaviour {
 
 	private GameObject playerPlane;
+	public Image medalImg;
 
 	private float score = 0;
 	private float scoreOffset;
@@ -17,6 +18,7 @@ public class LabelsManager : MonoBehaviour {
 	void Start () {
 
 		highscore = PlayerPrefs.GetFloat("highscore", 0);
+		medalImg.enabled = false;
 
 		GOLabel = GameObject.FindGameObjectWithTag ("GameOverLabel").GetComponent<Text>();
 		if (GOLabel != null) {
@@ -59,5 +61,26 @@ public class LabelsManager : MonoBehaviour {
 			GOLabel.text = "GAME OVER!\nMILES: " + score.ToString ("F2") + "\nHIGHSCORE: " + highscore.ToString("F2");
 		}
 		GOLabel.enabled = true;
+
+		if (score < 50)
+			return;
+
+		if (score >= 50) {
+			int totalBronze = PlayerPrefs.GetInt("bronze", 0);
+			medalImg.sprite = Resources.Load("Medals/bronze", typeof(Sprite)) as Sprite;
+			PlayerPrefs.SetInt("bronze", totalBronze+1);
+			Debug.Log("Bronze medals " + PlayerPrefs.GetInt("bronze"));
+		} else if (score >= 100) {
+			int totalSilver = PlayerPrefs.GetInt("silver", 0);
+			medalImg.sprite = Resources.Load("Medals/silver", typeof(Sprite)) as Sprite;
+			PlayerPrefs.SetInt("silver", totalSilver+1);
+			Debug.Log("Silver medals " + PlayerPrefs.GetInt("silver"));
+		} else if (score >= 150) {
+			int totalGold = PlayerPrefs.GetInt("gold", 0);
+			medalImg.sprite = Resources.Load("Medals/gold", typeof(Sprite)) as Sprite;
+			PlayerPrefs.SetInt("gold", totalGold+1);
+			Debug.Log("Gold medals " + PlayerPrefs.GetInt("gold"));
+		}
+		medalImg.enabled = true;
 	}
 }
