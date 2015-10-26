@@ -45,6 +45,7 @@ public class PlaneMovement : MonoBehaviour {
 	}
 	
 	void Start () {
+		moviolaFrames = 0;
 		lateralBoundaries = Camera.main.orthographicSize / 2;
 		currentExplosions = new GameObject[maxLifes];
 		explosionDirectionX = new int[maxLifes];
@@ -139,11 +140,16 @@ public class PlaneMovement : MonoBehaviour {
 
 	void Update() {
 
-		if (moviolaFrames > 0) {
+		if (moviolaFrames > 90) {
 			moviolaFrames--;
-			if (moviolaFrames == 0) {
-				Time.timeScale = 1;
-			}
+			Time.timeScale -= Time.timeScale * 0.07f;
+		} else if (moviolaFrames > 0 && moviolaFrames < 10) {
+			moviolaFrames--;
+			Time.timeScale += Time.timeScale * 0.07f;
+		} else if (moviolaFrames == 0) {
+			Time.timeScale = 1;
+		} else {
+			moviolaFrames--;
 		}
 
 		if ((Input.GetMouseButtonUp(0) || Input.GetKeyDown(KeyCode.Space)) && GetComponent<PlaneMovement> ().velocity.y == 0) {
@@ -214,7 +220,8 @@ public class PlaneMovement : MonoBehaviour {
 
 		if (isDead) return;
 
-		bool increaseHit = false;
+		bool increaseHit = true; //TODO setting this false enable a different mode
+								 //TODO to be eliminated in the final game!!!!!!!
 		if (collider.transform.position.x < transform.position.x) {
 			if (currentHitLeft == false) {
 				explosionDirectionX[currentHits] = -1;
@@ -249,7 +256,6 @@ public class PlaneMovement : MonoBehaviour {
 	}
 
 	public void killPlane() {
-		Time.timeScale = 0.1f;
 		moviolaFrames = 100;
 		isDead = true;
 	}

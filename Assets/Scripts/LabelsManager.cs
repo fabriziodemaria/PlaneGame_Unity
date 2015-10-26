@@ -7,6 +7,10 @@ public class LabelsManager : MonoBehaviour {
 	private GameObject playerPlane;
 	public Image medalImg;
 
+	public int bronzeScore;
+	public int silverScore;
+	public int goldScore;
+
 	private float score = 0;
 	private float scoreOffset;
 	private float highscore = 0;
@@ -51,6 +55,12 @@ public class LabelsManager : MonoBehaviour {
 	}
 	
 	public void showGameOver () {
+
+		/* Do not execute this code if the game is over already */
+		/* A bool system is probably more secure */
+		if (GOLabel.IsActive())
+			return;
+
 		SCLabel.enabled = false;
 
 		if (score > PlayerPrefs.GetFloat("highscore", 0)) {
@@ -62,20 +72,20 @@ public class LabelsManager : MonoBehaviour {
 		}
 		GOLabel.enabled = true;
 
-		if (score < 50)
+		if (score < bronzeScore)
 			return;
 
-		if (score >= 50) {
+		if (score >= bronzeScore && score < silverScore) {
 			int totalBronze = PlayerPrefs.GetInt("bronze", 0);
 			medalImg.sprite = Resources.Load("Medals/bronze", typeof(Sprite)) as Sprite;
 			PlayerPrefs.SetInt("bronze", totalBronze+1);
 			Debug.Log("Bronze medals " + PlayerPrefs.GetInt("bronze"));
-		} else if (score >= 100) {
+		} else if (score >= silverScore && score < goldScore) {
 			int totalSilver = PlayerPrefs.GetInt("silver", 0);
 			medalImg.sprite = Resources.Load("Medals/silver", typeof(Sprite)) as Sprite;
 			PlayerPrefs.SetInt("silver", totalSilver+1);
 			Debug.Log("Silver medals " + PlayerPrefs.GetInt("silver"));
-		} else if (score >= 150) {
+		} else if (score >= goldScore) {
 			int totalGold = PlayerPrefs.GetInt("gold", 0);
 			medalImg.sprite = Resources.Load("Medals/gold", typeof(Sprite)) as Sprite;
 			PlayerPrefs.SetInt("gold", totalGold+1);
