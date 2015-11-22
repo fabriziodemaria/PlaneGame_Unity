@@ -26,7 +26,7 @@ public class PlaneMovement : MonoBehaviour {
 	private float clickPos;
 
 	/* Physics */
-	private Vector3 lateralForce;
+	public Vector3 lateralForce;
 	private float lateralBoundaries;
 	private float currentRotationY = 0.0f;
 	private float currentRotationZ = 0.0f;
