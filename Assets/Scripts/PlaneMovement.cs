@@ -208,13 +208,25 @@ public class PlaneMovement : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D collider) {
 		if (isDead == false && collider.tag == "Wrench") {
 			Destroy (collider.gameObject);
-			fuelBarControl.moreFuel();
+			// fuelBarControl.moreFuel();
 			if (currentHits > 0) {
 				currentHits--;
 				currentHitLeft = false;
 				currentHitRight = false;
 				currentExplosions[currentHits].GetComponent<ParticleSystem>().emissionRate = 0;
 			}
+			return;
+		}
+
+		if (isDead == false && collider.tag == "Tank") {
+			Destroy (collider.gameObject);
+			fuelBarControl.moreFuel();
+//			if (currentHits > 0) {
+//				currentHits--;
+//				currentHitLeft = false;
+//				currentHitRight = false;
+//				currentExplosions[currentHits].GetComponent<ParticleSystem>().emissionRate = 0;
+//			}
 			return;
 		}
 
