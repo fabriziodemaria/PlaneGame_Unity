@@ -5,7 +5,9 @@ public class BGLooping : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D collider) {
 
-		Destroy(collider.gameObject);
+		if (collider.tag == "Cloud" || collider.tag == "Wrench" || collider.tag == "Tank") {
+			Destroy(collider.gameObject);
+		}
 
 		float heigthOfBG = ((BoxCollider2D)collider).size.y;
 		Vector3 pos = collider.transform.position;
