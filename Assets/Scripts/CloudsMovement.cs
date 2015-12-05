@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CloudsVelocity : MonoBehaviour {
+public class CloudsMovement : MonoBehaviour {
 
 	public Vector3 cloudSpeed;
 	

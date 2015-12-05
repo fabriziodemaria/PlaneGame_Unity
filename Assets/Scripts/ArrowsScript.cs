@@ -14,18 +14,12 @@ public class ArrowsScript : MonoBehaviour {
 	private GameObject[] leftArrows;
 	
 	private GameObject plane;
-	private int offsetX;
+	private int i;
 	private Vector3 lateralForce;
 
 
 	// Use this for initialization
 	void Start () {
-//		arrowR1 = GameObject.Find("ArrowR1");
-//		arrowR2 = GameObject.Find("ArrowR2");
-//		arrowR3 = GameObject.Find("ArrowR3");
-//		arrowL1 = GameObject.Find("ArrowL1");
-//		arrowL2 = GameObject.Find("ArrowL2");
-//		arrowL3 = GameObject.Find("ArrowL3");
 		plane = GameObject.FindGameObjectWithTag("Player");
 
 		rightArrows = new GameObject[3];
@@ -42,8 +36,6 @@ public class ArrowsScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		int i = 0;
-
 		if (plane.GetComponent<PlaneMovement>().isGameOver()) {
 			for (i = 0; i < 3; i++) {
 				rightArrows[i].GetComponent<SpriteRenderer>().enabled = false;
@@ -61,8 +53,6 @@ public class ArrowsScript : MonoBehaviour {
 		transform.position = pos;
 
 		lateralForce = plane.GetComponent<PlaneMovement>().lateralForce;
-
-		Debug.Log("Lateral force value " + lateralForce.x);
 
 		Color dim = Color.white;
 		Color filled = Color.white;

@@ -87,9 +87,9 @@ public class PlaneMovement : MonoBehaviour {
 		if (isDead && transform.localScale.x <= 0) {
 			velocity = new Vector3 (0, 0, 0);
 			GameObject.FindObjectOfType<Canvas> ().GetComponent<LabelsManager> ().showGameOver ();
-			Destroy (GameObject.FindObjectOfType<CloudSpawner> ());
-			Destroy (GameObject.FindObjectOfType<BirdSpanwer> ());
-			Destroy (GameObject.FindObjectOfType<GenerateBox> ());
+			Destroy (GameObject.Find("CloudSpawner"));
+			Destroy (GameObject.Find("BirdSpanwer"));
+			Destroy (GameObject.Find("WrenchSpawner"));
 			for (int i = 0; i < maxLifes; i++) {
 				if (currentExplosions[i] != null)
 					currentExplosions[i].GetComponent<ParticleSystem>().emissionRate = 0;
