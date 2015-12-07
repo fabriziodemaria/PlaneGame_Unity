@@ -90,6 +90,7 @@ public class PlaneMovement : MonoBehaviour {
 			Destroy (GameObject.Find("CloudSpawner"));
 			Destroy (GameObject.Find("BirdSpanwer"));
 			Destroy (GameObject.Find("WrenchSpawner"));
+			Destroy (GameObject.Find("TankSpawner"));
 			for (int i = 0; i < maxLifes; i++) {
 				if (currentExplosions[i] != null)
 					currentExplosions[i].GetComponent<ParticleSystem>().emissionRate = 0;
