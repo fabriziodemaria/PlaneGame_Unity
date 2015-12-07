@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class PlaneMovement : MonoBehaviour {
 
@@ -39,6 +40,7 @@ public class PlaneMovement : MonoBehaviour {
 	private int[] explosionDirectionX;
 	private float rotationTimer = 0;
 	private int moviolaFrames;
+	private bool isBackButtonPressed = false;
 
 	void Awake () {
 		Application.targetFrameRate = 300;
@@ -151,6 +153,10 @@ public class PlaneMovement : MonoBehaviour {
 			Time.timeScale = 1;
 		} else {
 			moviolaFrames--;
+		}
+
+		if (isBackButtonPressed) {
+			return;
 		}
 
 		if ((Input.GetMouseButtonUp(0) || Input.GetKeyDown(KeyCode.Space)) && GetComponent<PlaneMovement> ().velocity.y == 0) {
@@ -275,5 +281,13 @@ public class PlaneMovement : MonoBehaviour {
 
 	public bool isGameOver() {
 		return isDead;
+	}
+
+	public void bbPressed() {
+		isBackButtonPressed = true;
+	}
+
+	public void bbUnpressed() {
+		isBackButtonPressed = false;
 	}
 }
