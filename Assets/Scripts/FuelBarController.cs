@@ -30,12 +30,6 @@ public class FuelBarController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
-//		if (planeController.velocity.y == 0) {
-//			NLabel.text = "";
-//			return;
-//		}
-
 		if (planeController.isGameOver()) {
 			NLabel.text = "";			
 			return;

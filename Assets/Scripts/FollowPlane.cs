@@ -20,6 +20,10 @@ public class FollowPlane : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		if (playerPlane.transform.localScale.sqrMagnitude <= 1.1f) {
+			Destroy(this.gameObject);
+		}
+
 		Vector3 pos = playerPlane.transform.position;
 		Quaternion rot = playerPlane.transform.rotation;
 		pos.z += 1;
