@@ -43,7 +43,7 @@ public class PlaneMovement : MonoBehaviour {
 	private bool isBackButtonPressed = false;
 
 	void Awake () {
-		Application.targetFrameRate = 300;
+		Application.targetFrameRate = 60;
 	}
 	
 	void Start () {
