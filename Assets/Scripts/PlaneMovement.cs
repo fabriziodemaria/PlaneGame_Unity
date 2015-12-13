@@ -157,15 +157,7 @@ public class PlaneMovement : MonoBehaviour {
 			moviolaFrames--;
 		}
 
-		if (isBackButtonPressed) {
-			return;
-		}
-
-		if ((Input.GetMouseButtonUp(0) || Input.GetKeyDown(KeyCode.Space)) && GetComponent<PlaneMovement> ().velocity.y == 0) {
-			Application.LoadLevel( Application.loadedLevel);
-		}
-
-		if (isDead) return;
+		if (isBackButtonPressed || isDead) return;
 
 		if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetMouseButtonDown(0)) {
 			clicked = true;
@@ -274,6 +266,10 @@ public class PlaneMovement : MonoBehaviour {
 
 		if (currentHits >= maxLifes)
 			killPlane();
+	}
+
+	void OnApplicationPause(bool pauseStatus) {
+		
 	}
 
 	public void killPlane() {

@@ -17,6 +17,7 @@ public class LabelsManager : MonoBehaviour {
 
 	private Text GOLabel;
 	private Text SCLabel;
+	private GameObject RetryButton;
 
 	// Use this for initialization
 	void Start () {
@@ -29,6 +30,14 @@ public class LabelsManager : MonoBehaviour {
 			GOLabel.enabled = false;
 		} else {
 			Debug.LogError("No Game Over label has been found!");
+			return;
+		}
+
+		RetryButton = GameObject.Find("RetryButton");
+		if (RetryButton != null) {
+			RetryButton.GetComponent<Button>().gameObject.SetActive(false);
+		} else {
+			Debug.LogError("No RetryButton found!");
 			return;
 		}
 
@@ -60,6 +69,8 @@ public class LabelsManager : MonoBehaviour {
 		/* A bool system is probably more secure */
 		if (GOLabel.IsActive())
 			return;
+
+		RetryButton.GetComponent<Button>().gameObject.SetActive(true);
 
 		SCLabel.enabled = false;
 
