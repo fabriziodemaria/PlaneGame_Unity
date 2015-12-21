@@ -16,7 +16,7 @@ public class PlaneMovement : MonoBehaviour {
 	public float LongPressSensitivity;
 
 	/* Logic */
-	private bool isDead = false;
+	private bool isDead = false; //Variable that tells you if the plane has fallen 
 	public int maxLifes = 2;
 	private int currentHits = 0;
 	private bool currentHitLeft = false;
@@ -90,7 +90,7 @@ public class PlaneMovement : MonoBehaviour {
 			velocity = new Vector3 (0, 0, 0);
 			GameObject.FindObjectOfType<Canvas> ().GetComponent<LabelsManager> ().showGameOver ();
 			Destroy (GameObject.Find("CloudSpawner"));
-			Destroy (GameObject.Find("BirdSpawner"));
+			Destroy (GameObject.Find("BirdxSpawner"));
 			Destroy (GameObject.Find("WrenchSpawner"));
 			Destroy (GameObject.Find("TankSpawner"));
 			for (int i = 0; i < maxLifes; i++) {

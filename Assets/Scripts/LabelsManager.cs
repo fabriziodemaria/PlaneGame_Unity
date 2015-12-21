@@ -19,6 +19,12 @@ public class LabelsManager : MonoBehaviour {
 	private Text SCLabel;
 	private GameObject RetryButton;
 
+	public float Score {
+		get {
+			return score;
+		}
+	}
+
 	// Use this for initialization
 	void Start () {
 
