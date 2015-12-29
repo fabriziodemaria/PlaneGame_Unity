@@ -3,12 +3,12 @@ using System.Collections;
 
 public class FollowPlaneX : MonoBehaviour {
 	
-	GameObject playerPlane;
+	GameObject plane;
 	
 	// Use this for initialization
 	void Start () {
-		playerPlane = GameObject.FindGameObjectWithTag ("Player");
-		if (playerPlane == null) {
+		plane = GameObject.FindGameObjectWithTag ("Player");
+		if (plane == null) {
 			Debug.LogError("No plane found!");
 			return;
 		}
@@ -16,11 +16,12 @@ public class FollowPlaneX : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (playerPlane.transform.localScale.sqrMagnitude <= 1.1f) {
+		if (plane.GetComponent<PlaneMovement>().isGameOver()) {
 			Destroy(this.gameObject);
 		}
+
 		Vector3 pos = transform.position;
-		pos.x = playerPlane.transform.position.x;
+		pos.x = plane.transform.position.x;
 		transform.position = pos;
 	}
 }

@@ -45,6 +45,27 @@ public class PlaneMovement : MonoBehaviour {
 	void Awake () {
 		Application.targetFrameRate = 60;
 	}
+
+	public Vector3 LateralForce {
+		get {
+			return lateralForce;
+		}
+		set {
+			lateralForce = value;
+			Debug.Log("Changed force");
+			GameObject.FindObjectOfType<ArrowsScript>().updateArrows(lateralForce);
+		}
+	}
+
+	public bool IsDead {
+		get {
+			return isDead;
+		}
+		set {
+			isDead = value;
+			GameObject.FindObjectOfType<ArrowsScript>().updateArrows(lateralForce);
+		}
+	}
 	
 	void Start () {
 		moviolaFrames = 0;
@@ -61,7 +82,7 @@ public class PlaneMovement : MonoBehaviour {
 	void FixedUpdate () {
 		/* Forward speed */
 		transform.position += velocity * Time.deltaTime;
-		transform.position += lateralForce * Time.deltaTime;
+		transform.position += LateralForce * Time.deltaTime;
 
 		for (int i = 0; i < currentHits; i++) {
 			/* Handle explosion graphics */
@@ -103,22 +124,11 @@ public class PlaneMovement : MonoBehaviour {
 		}
 
 		/* Handle lateral boundaries */
-		if (!isDead && ((transform.position.x < -lateralBoundaries && lateralForce.x < 0) || 
-			(transform.position.x > lateralBoundaries && lateralForce.x > 0))) {
+		if (!isDead && ((transform.position.x < -lateralBoundaries && LateralForce.x < 0) || 
+			(transform.position.x > lateralBoundaries && LateralForce.x > 0))) {
 			lateralVelocityChanged = true;
-			lateralForce = new Vector3 ();
+			LateralForce = new Vector3 ();
 		} 
-
-		/* Handle lateral force and rotation */
-//		if (lateralForce.x != 0) {
-			/* Dynamic velocity change according to rotation TODO */
-//			float instantRatio = Mathf.Lerp (0, 1, Mathf.Abs(currentRotationY) / (Mathf.Lerp (0, maxLateralRoll, (Mathf.Abs(lateralForce.x) / maxLateralForce))));
-//			Debug.Log("Current ratio " + instantRatio);
-//			Debug.Log("Current subratio " + (Mathf.Abs(currentRotationY) / (Mathf.Lerp (0, maxLateralRoll, (Mathf.Abs(lateralForce.x) / maxLateralForce)))));
-//			float instantLateralForce = lateralForce.x * instantRatio;
-//			Vector3 instantForce = new Vector3(instantLateralForce, lateralForce.y, lateralForce.z);
-//			transform.position += instantForce * Time.deltaTime;
-//		}
 
 		if (lateralVelocityChanged) {
 			lateralVelocityChanged = false;
@@ -127,16 +137,16 @@ public class PlaneMovement : MonoBehaviour {
 			rotationTimer = 0;
 		}
 
-		if (lateralForce.x > 0) {
+		if (LateralForce.x > 0) {
 			rotationTimer += Time.deltaTime * rotationSpeed;
 			transform.rotation = Quaternion.Euler (0, 
-			                                       Mathf.SmoothStep (currentRotationY, Mathf.Lerp (0, -maxLateralRoll, lateralForce.x / maxLateralForce), rotationTimer), 
-			                                       Mathf.SmoothStep (currentRotationZ, Mathf.Lerp (0, -maxLateralYaw, lateralForce.x / maxLateralForce), rotationTimer));
-		} else if (lateralForce.x < 0) {
+				Mathf.SmoothStep (currentRotationY, Mathf.Lerp (0, -maxLateralRoll, LateralForce.x / maxLateralForce), rotationTimer), 
+				Mathf.SmoothStep (currentRotationZ, Mathf.Lerp (0, -maxLateralYaw, LateralForce.x / maxLateralForce), rotationTimer));
+		} else if (LateralForce.x < 0) {
 			rotationTimer += Time.deltaTime * rotationSpeed;
 			transform.rotation = Quaternion.Euler (0, 
-			                                       Mathf.SmoothStep (currentRotationY, Mathf.Lerp (0, maxLateralRoll, -lateralForce.x / maxLateralForce), rotationTimer), 
-			                                       Mathf.SmoothStep (currentRotationZ, Mathf.Lerp (0, maxLateralYaw, -lateralForce.x / maxLateralForce), rotationTimer));
+				Mathf.SmoothStep (currentRotationY, Mathf.Lerp (0, maxLateralRoll, -LateralForce.x / maxLateralForce), rotationTimer), 
+				Mathf.SmoothStep (currentRotationZ, Mathf.Lerp (0, maxLateralYaw, -LateralForce.x / maxLateralForce), rotationTimer));
 		} else {
 			rotationTimer += Time.deltaTime * rotationSpeed;
 			transform.rotation = Quaternion.Euler (0, Mathf.SmoothStep (currentRotationY, 0, rotationTimer), Mathf.SmoothStep (currentRotationZ, 0, rotationTimer));
@@ -144,7 +154,7 @@ public class PlaneMovement : MonoBehaviour {
 	}
 
 	void Update() {
-
+		/* Moviola effect */
 		if (moviolaFrames > 90) {
 			moviolaFrames--;
 			Time.timeScale -= Time.timeScale * 0.07f;
@@ -156,6 +166,7 @@ public class PlaneMovement : MonoBehaviour {
 		} else {
 			moviolaFrames--;
 		}
+		/* End Moviola effect */
 
 		if (isBackButtonPressed || isDead) return;
 
@@ -188,20 +199,21 @@ public class PlaneMovement : MonoBehaviour {
 
 	void handlePlayerInput(float posX, bool longPress) {
 		if (posX < Screen.width / 2) {
-			if (lateralForce.x > -maxLateralForce && transform.position.x > -lateralBoundaries) {
+			if (LateralForce.x > -maxLateralForce && transform.position.x > -lateralBoundaries) {
+				Debug.Log("Boh");
 				lateralVelocityChanged = true;
 				if (longPress)
-					lateralForce.x = -maxLateralForce;
+					LateralForce = new Vector3(-maxLateralForce, LateralForce.y, LateralForce.z);
 				else
-					lateralForce.x--;
+					LateralForce = new Vector3(LateralForce.x - 1, LateralForce.y, LateralForce.z);
 			}
 		} else {
-			if (lateralForce.x < maxLateralForce && transform.position.x < lateralBoundaries) {
+			if (LateralForce.x < maxLateralForce && transform.position.x < lateralBoundaries) {
 				lateralVelocityChanged = true;
 				if (longPress)
-					lateralForce.x = maxLateralForce;
+					LateralForce = new Vector3(maxLateralForce, LateralForce.y, LateralForce.z);
 				else
-					lateralForce.x++;
+					LateralForce = new Vector3(LateralForce.x + 1, LateralForce.y, LateralForce.z);
 			}
 		}
 	}
@@ -214,7 +226,9 @@ public class PlaneMovement : MonoBehaviour {
 				currentHits--;
 				currentHitLeft = false;
 				currentHitRight = false;
-				currentExplosions[currentHits].GetComponent<ParticleSystem>().emissionRate = 0;
+				ParticleSystem ps = currentExplosions[currentHits].GetComponent<ParticleSystem>();
+				ParticleSystem.EmissionModule em = ps.emission;
+				em.enabled = false;
 			}
 			return;
 		}
@@ -222,19 +236,13 @@ public class PlaneMovement : MonoBehaviour {
 		if (isDead == false && collider.tag == "Tank") {
 			Destroy (collider.gameObject);
 			fuelBarControl.moreFuel();
-//			if (currentHits > 0) {
-//				currentHits--;
-//				currentHitLeft = false;
-//				currentHitRight = false;
-//				currentExplosions[currentHits].GetComponent<ParticleSystem>().emissionRate = 0;
-//			}
 			return;
 		}
 
 		if (isDead) return;
 
-		bool increaseHit = true; //TODO setting this false enable a different mode
-								 //TODO to be eliminated in the final game!!!!!!!
+		bool increaseHit = true;
+
 		if (collider.transform.position.x < transform.position.x) {
 			if (currentHitLeft == false) {
 				explosionDirectionX[currentHits] = -1;
@@ -268,13 +276,10 @@ public class PlaneMovement : MonoBehaviour {
 			killPlane();
 	}
 
-	void OnApplicationPause(bool pauseStatus) {
-		
-	}
-
 	public void killPlane() {
 		moviolaFrames = 100;
 		isDead = true;
+		GameObject.FindObjectOfType<ArrowsScript>().updateArrows(lateralForce);
 	}
 
 	public bool isGameOver() {

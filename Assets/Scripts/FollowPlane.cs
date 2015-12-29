@@ -3,34 +3,34 @@ using System.Collections;
 
 public class FollowPlane : MonoBehaviour {
 
-	GameObject playerPlane;
+	GameObject plane;
 	public float shadowOffsetX;
 	public float shadowOffsetY;
 	private float initialScale;
 
 	// Use this for initialization
 	void Start () {
-		playerPlane = GameObject.FindGameObjectWithTag ("Player");
-		if (playerPlane == null) {
+		plane = GameObject.FindGameObjectWithTag ("Player");
+		if (plane == null) {
 			Debug.LogError("No plane found!");
 			return;
 		}
-		initialScale = playerPlane.transform.localScale.x;
+		initialScale = plane.transform.localScale.x;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (playerPlane.transform.localScale.sqrMagnitude <= 1.1f) {
+		if (plane.GetComponent<PlaneMovement>().isGameOver()) {
 			Destroy(this.gameObject);
 		}
 
-		Vector3 pos = playerPlane.transform.position;
-		Quaternion rot = playerPlane.transform.rotation;
+		Vector3 pos = plane.transform.position;
+		Quaternion rot = plane.transform.rotation;
 		pos.z += 1;
-		pos.x += shadowOffsetX * (playerPlane.transform.localScale.x / initialScale);
-		pos.y += shadowOffsetY * (playerPlane.transform.localScale.x / initialScale);
+		pos.x += shadowOffsetX * (plane.transform.localScale.x / initialScale);
+		pos.y += shadowOffsetY * (plane.transform.localScale.x / initialScale);
 		transform.position = pos;
 		transform.rotation = rot;
-		transform.localScale = playerPlane.transform.localScale;
+		transform.localScale = plane.transform.localScale;
 	}
 }

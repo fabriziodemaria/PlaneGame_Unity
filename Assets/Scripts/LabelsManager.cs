@@ -27,7 +27,6 @@ public class LabelsManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-
 		highscore = PlayerPrefs.GetFloat("highscore", 0);
 		medalImg.enabled = false;
 
@@ -70,14 +69,12 @@ public class LabelsManager : MonoBehaviour {
 	}
 	
 	public void showGameOver () {
-
 		/* Do not execute this code if the game is over already */
 		/* A bool system is probably more secure */
 		if (GOLabel.IsActive())
 			return;
 
 		RetryButton.GetComponent<Button>().gameObject.SetActive(true);
-
 		SCLabel.enabled = false;
 
 		if (score > PlayerPrefs.GetFloat("highscore", 0)) {
@@ -91,8 +88,7 @@ public class LabelsManager : MonoBehaviour {
 
 		if (score < bronzeScore)
 			return;
-
-		if (score >= bronzeScore && score < silverScore) {
+		else if (score >= bronzeScore && score < silverScore) {
 			int totalBronze = PlayerPrefs.GetInt("bronze", 0);
 			medalImg.sprite = Resources.Load("Medals/bronze", typeof(Sprite)) as Sprite;
 			PlayerPrefs.SetInt("bronze", totalBronze+1);

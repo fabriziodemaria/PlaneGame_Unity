@@ -9,7 +9,6 @@ public class PrintScore : MonoBehaviour {
 	private GameObject bronzeText;
 	private GameObject recordLabel;
 	
-	// Use this for initialization
 	void Start () {
 		goldText = GameObject.Find("GoldText");
 		silverText = GameObject.Find("SilverText");

@@ -3,10 +3,13 @@ using System.Collections;
 
 public class BGLooping : MonoBehaviour {
 
+	/* Set background images here in Unity */
 	public Sprite toForest;
 	public Sprite forest;
+
 	private LabelsManager scoreKeeper;
-	private int currentBG = 0;
+	private int scrollTimeOffset = 30;
+	private int BGIndex = 0;
 
 	void Start () {
 		scoreKeeper = GameObject.FindObjectOfType<LabelsManager>();
@@ -21,17 +24,19 @@ public class BGLooping : MonoBehaviour {
 
 		float currentScore = scoreKeeper.Score;
 
-		if (currentScore > 20 && currentScore < 70) {
-			if (currentBG < 1) {
-				Debug.Log("Setting to forest");
-				currentBG++;
+		/* Handle background changes */
+		if (currentScore > 50 - scrollTimeOffset && currentScore < 100 - scrollTimeOffset) {
+			if (BGIndex < 1) {
+				BGIndex++;
 				collider.GetComponent<SpriteRenderer>().sprite = toForest;
 			} else {
-				Debug.Log("Setting forest");
 				collider.GetComponent<SpriteRenderer>().sprite = forest;
 			}
 		}
+		moveBGUp(collider);
+	}
 
+	void moveBGUp (Collider2D collider) {
 		float heigthOfBG = ((BoxCollider2D)collider).size.y;
 		Vector3 pos = collider.transform.position;
 		pos.y += heigthOfBG * 2;
