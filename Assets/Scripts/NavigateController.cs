@@ -1,16 +1,17 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class NavigateController : MonoBehaviour {
 
 	public void NewGame() {
-		Application.LoadLevel("MainGame");
+		SceneManager.LoadScene("MainGame");
 	}
 
 	public void MainMenu() {
-		Application.LoadLevel("MainMenu");
+		SceneManager.LoadScene("MainMenu");
 	}
 
 	public void StatsMenu() {
-		Application.LoadLevel("StatsPage");
+		SceneManager.LoadScene("StatsPage");
 	}
 }

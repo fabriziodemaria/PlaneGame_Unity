@@ -19,8 +19,7 @@ public class FuelBarController : MonoBehaviour {
 			return;
 		}
 
-		
-		NLabel = GameObject.FindGameObjectWithTag ("NotificationLabel").GetComponent<Text>();
+		NLabel = GameObject.FindGameObjectWithTag("NotificationLabel").GetComponent<Text>();
 		if (NLabel == null) {
 			Debug.LogError("No Notification label has been found!");
 			return;
@@ -32,7 +31,7 @@ public class FuelBarController : MonoBehaviour {
 	void Update () {
 		if (planeController.isGameOver()) {
 			NLabel.text = "";			
-			return;
+			GameObject.Destroy(this);
 		}
 		
 		if (fuelBarImage.fillAmount <= 0)
