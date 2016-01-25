@@ -19,6 +19,7 @@ public class PlaneMovement : MonoBehaviour {
 	private bool isDead = false; //Variable that tells you if the plane has fallen 
 	public int maxLifes = 2;
 	private int currentHits = 0;
+	public bool godMode = false;
 	private bool currentHitLeft = false;
 	private bool currentHitRight = false;
 	private FuelBarController fuelBarControl;
@@ -41,6 +42,10 @@ public class PlaneMovement : MonoBehaviour {
 	private float rotationTimer = 0;
 	private int moviolaFrames;
 	private bool isBackButtonPressed = false;
+
+	/* Sound */
+	public GameObject hitClip;
+	public GameObject parachutesClip;
 
 	void Awake () {
 		Application.targetFrameRate = 60;
@@ -230,17 +235,21 @@ public class PlaneMovement : MonoBehaviour {
 				ParticleSystem.EmissionModule em = ps.emission;
 				em.enabled = false;
 			}
+			parachutesClip.GetComponent<AudioSource>().Play();
 			return;
 		}
 
 		if (isDead == false && collider.tag == "Tank") {
 			Destroy (collider.gameObject);
 			fuelBarControl.moreFuel();
+			parachutesClip.GetComponent<AudioSource>().Play();
 			return;
 		}
 
-		if (isDead) return;
+		if (isDead || godMode) return;
 
+		if(!(currentHits+1 >= maxLifes))
+			this.GetComponent<HitPlane>().StartGodMode(); //this enables godMode bool
 		bool increaseHit = true;
 
 		if (collider.transform.position.x < transform.position.x) {
@@ -248,12 +257,14 @@ public class PlaneMovement : MonoBehaviour {
 				explosionDirectionX[currentHits] = -1;
 				currentHitLeft = true;
 				increaseHit = true;
+				hitClip.GetComponent<AudioSource>().Play();
 			}
 		} else { 
 			if (currentHitRight == false) {
 				explosionDirectionX[currentHits] = 1;
 				currentHitRight = true;
 				increaseHit = true;
+				hitClip.GetComponent<AudioSource>().Play();
 			}
 		}
 
@@ -265,8 +276,6 @@ public class PlaneMovement : MonoBehaviour {
 		Vector3 pos = transform.position;
 		pos.x += explosionDirectionX[currentHits] * transform.localScale.x / 2;
 		Instantiate(FocalExplosionPrefab, pos, Quaternion.Euler(0,180,180));
-
-		//Check current total hits
 		currentExplosions.SetValue((GameObject)Instantiate(ExplosionPrefab, pos, Quaternion.Euler(-90,0,0)), currentHits);
 
 		// Move to the next position for the explosions array and logic checks
