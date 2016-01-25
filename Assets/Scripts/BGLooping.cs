@@ -6,6 +6,8 @@ public class BGLooping : MonoBehaviour {
 	/* Set background images here in Unity */
 	public Sprite toForest;
 	public Sprite forest;
+	public Sprite toDesert;
+	public Sprite Desert;
 
 	private LabelsManager scoreKeeper;
 	private int scrollTimeOffset = 30;
@@ -31,6 +33,15 @@ public class BGLooping : MonoBehaviour {
 				collider.GetComponent<SpriteRenderer>().sprite = toForest;
 			} else {
 				collider.GetComponent<SpriteRenderer>().sprite = forest;
+			}
+		}
+		/* End background changes */
+		if (currentScore >= 100 - scrollTimeOffset && currentScore < 150 - scrollTimeOffset) {
+			if (BGIndex < 2) {
+				BGIndex++;
+				collider.GetComponent<SpriteRenderer>().sprite = toDesert;
+			} else {
+				collider.GetComponent<SpriteRenderer>().sprite = Desert;
 			}
 		}
 		moveBGUp(collider);
