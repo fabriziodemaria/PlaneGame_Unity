@@ -61,16 +61,6 @@ public class PlaneMovement : MonoBehaviour {
 			GameObject.FindObjectOfType<ArrowsScript>().updateArrows(lateralForce);
 		}
 	}
-
-	public bool IsDead {
-		get {
-			return isDead;
-		}
-		set {
-			isDead = value;
-			GameObject.FindObjectOfType<ArrowsScript>().updateArrows(lateralForce);
-		}
-	}
 	
 	void Start () {
 		moviolaFrames = 0;
@@ -120,10 +110,6 @@ public class PlaneMovement : MonoBehaviour {
 		if (isDead && transform.localScale.x <= 0) {
 			velocity = new Vector3 (0, 0, 0);
 			GameObject.FindObjectOfType<Canvas> ().GetComponent<LabelsManager> ().showGameOver ();
-			Destroy (GameObject.Find("CloudSpawner"));
-			Destroy (GameObject.Find("BirdxSpawner"));
-			Destroy (GameObject.Find("WrenchSpawner"));
-			Destroy (GameObject.Find("TankSpawner"));
 			for (int i = 0; i < maxLifes; i++) {
 				if (currentExplosions[i] != null) {
 					ParticleSystem.EmissionModule em = currentExplosions[i].GetComponent<ParticleSystem>().emission;

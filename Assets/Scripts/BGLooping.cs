@@ -7,7 +7,9 @@ public class BGLooping : MonoBehaviour {
 	public Sprite toForest;
 	public Sprite forest;
 	public Sprite toDesert;
-	public Sprite Desert;
+	public Sprite desert;
+	public Sprite toSpace;
+	public Sprite space;
 
 	private LabelsManager scoreKeeper;
 	private int scrollTimeOffset = 30;
@@ -35,15 +37,23 @@ public class BGLooping : MonoBehaviour {
 				collider.GetComponent<SpriteRenderer>().sprite = forest;
 			}
 		}
-		/* End background changes */
 		if (currentScore >= 100 - scrollTimeOffset && currentScore < 150 - scrollTimeOffset) {
 			if (BGIndex < 2) {
 				BGIndex++;
 				collider.GetComponent<SpriteRenderer>().sprite = toDesert;
 			} else {
-				collider.GetComponent<SpriteRenderer>().sprite = Desert;
+				collider.GetComponent<SpriteRenderer>().sprite = desert;
 			}
 		}
+		if (currentScore >= 150 - scrollTimeOffset && currentScore < 200 - scrollTimeOffset) {
+			if (BGIndex < 3) {
+				BGIndex++;
+				collider.GetComponent<SpriteRenderer>().sprite = toSpace;
+			} else {
+				collider.GetComponent<SpriteRenderer>().sprite = space;
+			}
+		}
+		/* End background changes */
 		moveBGUp(collider);
 	}
 

@@ -32,10 +32,14 @@ public class FuelBarController : MonoBehaviour {
 		if (planeController.isGameOver()) {
 			NLabel.text = "";			
 			GameObject.Destroy(this);
+			return;
 		}
 		
-		if (fuelBarImage.fillAmount <= 0)
+		if (fuelBarImage.fillAmount <= 0) {
 			planeController.killPlane();
+			NLabel.text = "";	
+			return;
+		}
 
 		Color barColor = Color.white;
 		if (fuelBarImage.fillAmount <= 0.3f) {
