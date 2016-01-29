@@ -107,8 +107,13 @@ public class PlaneMovement : MonoBehaviour {
 			planescale.y -= fallingRate * Time.deltaTime;
 			transform.localScale = planescale;
 
-			if (planescale.x <=0)
-				Instantiate(SplashFocalPrefab, transform.position, Quaternion.Euler(0,180,180));
+			if (planescale.x <=0) {
+				if (transform.position.y < 50) {
+					Instantiate(SplashFocalPrefab, transform.position, Quaternion.Euler(0,180,180));
+				}
+				else
+					Instantiate(FocalExplosionPrefab, transform.position, Quaternion.Euler(0,180,180));
+			}
 			return;
 		}
 
