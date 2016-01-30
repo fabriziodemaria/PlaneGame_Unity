@@ -24,7 +24,6 @@ public class SpawnersController : MonoBehaviour {
 		if (playerPlane.GetComponent<PlaneMovement>().isGameOver() && playerPlane.transform.localScale.x <= 0) {
 			Destroy (GameObject.Find("CloudSpawner"));
 			Destroy (GameObject.Find("MeteoriteSpawner"));
-			Destroy (GameObject.Find("BirdxSpawner"));
 			Destroy (GameObject.Find("WrenchSpawner"));
 			Destroy (GameObject.Find("TankSpawner"));
 			return;
@@ -32,6 +31,7 @@ public class SpawnersController : MonoBehaviour {
 		if (playerPlane.transform.position.y > 150 && meteoriteSpawner.activeSelf == false) {
 			cloudSpawner.SetActive(false);
 			meteoriteSpawner.SetActive(true);
+			Destroy (GameObject.Find("BirdsSpawner"));
 		}
 	}
 }
