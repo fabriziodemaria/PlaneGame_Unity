@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 /// <summary>
 /// Main player controller for the plane. Handles movement, collisions, damage, and death.
