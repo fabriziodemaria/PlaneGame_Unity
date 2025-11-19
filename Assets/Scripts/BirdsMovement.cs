@@ -1,12 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BirdsMovement : MonoBehaviour {
+/// <summary>
+/// Simple movement controller for birds with constant velocity.
+/// </summary>
+public class BirdsMovement : MonoBehaviour
+{
+	[SerializeField] private Vector3 velocity = new Vector3(0, -2f, 0);
 
-	public Vector3 velocity;
-	
-	// Update is called once per frame
-	void Update () {
+	void FixedUpdate()
+	{
+		// Move bird with constant velocity
 		transform.position += velocity * Time.deltaTime;
 	}
 }
+

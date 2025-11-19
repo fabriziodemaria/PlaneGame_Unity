@@ -3,74 +3,127 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class PlaneMovement : MonoBehaviour {
+/// <summary>
+/// Main player controller for the plane. Handles movement, collisions, damage, and death.
+/// </summary>
+public class PlaneMovement : MonoBehaviour
+{
+	[Header("Prefabs")]
+	[SerializeField] private GameObject explosionPrefab;
+	[SerializeField] private GameObject focalExplosionPrefab;
+	[SerializeField] private GameObject splashFocalPrefab;
 
-	public GameObject ExplosionPrefab; //Needs a better place TODO
-	public GameObject FocalExplosionPrefab;
-	public GameObject SplashFocalPrefab;
-	public Vector3 velocity;
-	public float maxLateralRoll;
-	public float maxLateralYaw;
-	public int maxLateralForce;
-	public float fallingRate;
-	public float LongPressSensitivity;
+	[Header("Movement Settings")]
+	[SerializeField] private Vector3 velocity = new Vector3(0, 5, 0);
+	[SerializeField] private float maxLateralRoll = 30f;
+	[SerializeField] private float maxLateralYaw = 15f;
+	[SerializeField] private int maxLateralForce = 3;
+	[SerializeField] private float fallingRate = 2f;
+	[SerializeField] private int rotationSpeed = 5;
 
-	/* Logic */
-	private bool isDead = false; //Variable that tells you if the plane has fallen 
-	public int maxLifes = 2;
+	[Header("Input Settings")]
+	[SerializeField] private float longPressSensitivity = 0.3f;
+
+	[Header("Gameplay Settings")]
+	[SerializeField] private int maxLifes = 2;
+	[SerializeField] private bool godMode = false;
+
+	[Header("Audio")]
+	[SerializeField] private GameObject hitClip;
+	[SerializeField] private GameObject parachutesClip;
+
+	// Logic state
+	private bool isDead = false;
 	private int currentHits = 0;
-	public bool godMode = false;
 	private bool currentHitLeft = false;
 	private bool currentHitRight = false;
-	private FuelBarController fuelBarControl;
 	private bool clicked;
 	private float clickTime;
 	private float clickPos;
+	private bool isBackButtonPressed = false;
 
-	/* Physics */
+	// Cached references
+	private FuelBarController fuelBarControl;
+	private ArrowsScript arrowsScript;
+	private LabelsManager labelsManager;
+	private SpriteRenderer spriteRenderer;
+
+	// Physics
 	public Vector3 lateralForce;
 	private float lateralBoundaries;
 	private float currentRotationY = 0.0f;
 	private float currentRotationZ = 0.0f;
 	private bool lateralVelocityChanged = false;
 
-	/* View */
-	public int rotationSpeed;
-	private GameObject[] currentExplosions; //Needs a better place TODO
-	private GameObject smokeParticles;
+	// Visual effects
+	private GameObject[] currentExplosions;
 	private int[] explosionDirectionX;
 	private float rotationTimer = 0;
 	private int moviolaFrames;
-	private bool isBackButtonPressed = false;
-
-	/* Sound */
-	public GameObject hitClip;
-	public GameObject parachutesClip;
 
 	void Awake () {
 		Application.targetFrameRate = 60;
 	}
 
-	public Vector3 LateralForce {
-		get {
-			return lateralForce;
-		}
-		set {
+	public Vector3 LateralForce
+	{
+		get { return lateralForce; }
+		set
+		{
 			lateralForce = value;
-			Debug.Log("Changed force");
-			GameObject.FindObjectOfType<ArrowsScript>().updateArrows(lateralForce);
+			if (arrowsScript != null)
+				arrowsScript.updateArrows(lateralForce);
 		}
 	}
-	
-	void Start () {
+
+	void Start()
+	{
+		// Initialize state
 		moviolaFrames = 0;
-		lateralBoundaries = Camera.main.orthographicSize / 2;
 		currentExplosions = new GameObject[maxLifes];
 		explosionDirectionX = new int[maxLifes];
-		fuelBarControl = GameObject.FindObjectOfType<FuelBarController>();
-		if (fuelBarControl == null) {
-			Debug.LogError("Fuel bar not found!");
-			return;
+
+		// Cache component references
+		spriteRenderer = GetComponent<SpriteRenderer>();
+		if (spriteRenderer != null)
+		{
+			spriteRenderer.sortingLayerName = LayerConstants.SORT_PLAYER;
+			spriteRenderer.sortingOrder = LayerConstants.ORDER_PLAYER;
+		}
+
+		// Set proper Z-depth for player
+		Vector3 pos = transform.position;
+		pos.z = LayerConstants.Z_PLAYER;
+		transform.position = pos;
+
+		// Cache external references
+		fuelBarControl = FindObjectOfType<FuelBarController>();
+		if (fuelBarControl == null)
+		{
+			Debug.LogError("PlaneMovement: FuelBarController not found!");
+		}
+
+		arrowsScript = FindObjectOfType<ArrowsScript>();
+		if (arrowsScript == null)
+		{
+			Debug.LogWarning("PlaneMovement: ArrowsScript not found!");
+		}
+
+		labelsManager = FindObjectOfType<LabelsManager>();
+		if (labelsManager == null)
+		{
+			Debug.LogWarning("PlaneMovement: LabelsManager not found!");
+		}
+
+		// Calculate lateral boundaries
+		if (Camera.main != null)
+		{
+			lateralBoundaries = Camera.main.orthographicSize / 2f;
+		}
+		else
+		{
+			Debug.LogWarning("PlaneMovement: Main camera not found!");
+			lateralBoundaries = 2.5f;
 		}
 	}
 
@@ -92,24 +145,28 @@ public class PlaneMovement : MonoBehaviour {
 
 		/* Handle dead trigger */
 		if (isDead && transform.localScale.x >= 0) {
-			Vector3 planescale = transform.localScale; 
+			Vector3 planescale = transform.localScale;
 			planescale.x -= fallingRate * Time.deltaTime;
 			planescale.y -= fallingRate * Time.deltaTime;
 			transform.localScale = planescale;
 
-			if (planescale.x <=0) {
+			if (planescale.x <= 0) {
 				if (transform.position.y < 50) {
-					Instantiate(SplashFocalPrefab, transform.position, Quaternion.Euler(0,180,180));
+					Instantiate(splashFocalPrefab, transform.position, Quaternion.Euler(0, 180, 180));
 				}
-				else
-					Instantiate(FocalExplosionPrefab, transform.position, Quaternion.Euler(0,180,180));
+				else {
+					Instantiate(focalExplosionPrefab, transform.position, Quaternion.Euler(0, 180, 180));
+				}
 			}
 			return;
 		}
 
 		if (isDead && transform.localScale.x <= 0) {
-			velocity = new Vector3 (0, 0, 0);
-			GameObject.FindObjectOfType<Canvas> ().GetComponent<LabelsManager> ().showGameOver ();
+			velocity = Vector3.zero;
+			if (labelsManager != null)
+			{
+				labelsManager.showGameOver();
+			}
 			for (int i = 0; i < maxLifes; i++) {
 				if (currentExplosions[i] != null) {
 					ParticleSystem.EmissionModule em = currentExplosions[i].GetComponent<ParticleSystem>().emission;
@@ -266,8 +323,8 @@ public class PlaneMovement : MonoBehaviour {
 
 		Vector3 pos = transform.position;
 		pos.x += explosionDirectionX[currentHits] * transform.localScale.x / 2;
-		Instantiate(FocalExplosionPrefab, pos, Quaternion.Euler(0,180,180));
-		currentExplosions.SetValue((GameObject)Instantiate(ExplosionPrefab, pos, Quaternion.Euler(-90,0,0)), currentHits);
+		Instantiate(focalExplosionPrefab, pos, Quaternion.Euler(0, 180, 180));
+		currentExplosions.SetValue((GameObject)Instantiate(explosionPrefab, pos, Quaternion.Euler(-90, 0, 0)), currentHits);
 
 		// Move to the next position for the explosions array and logic checks
 		currentHits++;
@@ -276,10 +333,14 @@ public class PlaneMovement : MonoBehaviour {
 			killPlane();
 	}
 
-	public void killPlane() {
+	public void killPlane()
+	{
 		moviolaFrames = 100;
 		isDead = true;
-		GameObject.FindObjectOfType<ArrowsScript>().updateArrows(lateralForce);
+		if (arrowsScript != null)
+		{
+			arrowsScript.updateArrows(lateralForce);
+		}
 	}
 
 	public bool isGameOver() {
