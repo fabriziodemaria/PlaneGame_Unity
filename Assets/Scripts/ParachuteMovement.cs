@@ -1,12 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ParachuteMovement : MonoBehaviour {
+/// <summary>
+/// Simple movement controller for parachutes with constant downward speed.
+/// </summary>
+public class ParachuteMovement : MonoBehaviour
+{
+	[SerializeField] private Vector3 parachuteSpeed = new Vector3(0, -2f, 0);
 
-	public Vector3 parachuteSpeed;
-
-	// Update is called once per frame
-	void Update () {
+	void FixedUpdate()
+	{
+		// Move parachute with constant velocity
 		transform.position += parachuteSpeed * Time.deltaTime;
 	}
 }
+

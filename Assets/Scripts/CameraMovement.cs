@@ -1,27 +1,40 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CameraMovement : MonoBehaviour {
+/// <summary>
+/// Camera controller that smoothly follows the player's vertical (Y) position.
+/// </summary>
+public class CameraMovement : MonoBehaviour
+{
+	private Transform planeTransform;
+	private float offsetY;
 
-	Transform planetransform;
-	private float offsetX;
+	void Start()
+	{
+		// Cache player plane reference
+		GameObject playerPlane = GameObject.FindGameObjectWithTag("Player");
 
-	// Use this for initialization
-	void Start () {
-		GameObject playerplane = GameObject.FindGameObjectWithTag ("Player");
-
-		if (playerplane == null) {
-			Debug.LogError("Ups, no plane found on the screen");
+		if (playerPlane == null)
+		{
+			Debug.LogError("CameraMovement: No plane found on the screen!");
+			enabled = false;
 			return;
 		}
-		planetransform = playerplane.transform;
-		offsetX = transform.position.y - planetransform.position.y;
+
+		planeTransform = playerPlane.transform;
+		// Calculate Y offset between camera and plane
+		offsetY = transform.position.y - planeTransform.position.y;
 	}
-	
-	// Update is called once per frame
-	void Update () {
+
+	void LateUpdate()
+	{
+		if (planeTransform == null)
+			return;
+
+		// Follow plane's Y position while maintaining offset
 		Vector3 pos = transform.position;
-		pos.y = planetransform.position.y + offsetX;
+		pos.y = planeTransform.position.y + offsetY;
 		transform.position = pos;
 	}
 }
+

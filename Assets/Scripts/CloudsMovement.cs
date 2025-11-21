@@ -1,15 +1,23 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CloudsMovement : MonoBehaviour {
+/// <summary>
+/// Simple movement controller for clouds with randomized downward speed.
+/// </summary>
+public class CloudsMovement : MonoBehaviour
+{
+	[SerializeField] private Vector3 cloudSpeed = new Vector3(0, -2f, 0);
 
-	public Vector3 cloudSpeed;
-	
-	void Start () {
-		cloudSpeed.y -= Random.Range(0.0f,1.8f);
+	void Start()
+	{
+		// Add random variation to downward speed
+		cloudSpeed.y -= Random.Range(0.0f, 1.8f);
 	}
-	// Update is called once per frame
-	void Update () {
+
+	void FixedUpdate()
+	{
+		// Move cloud downward (or in specified direction)
 		transform.position += cloudSpeed * Time.deltaTime;
 	}
 }
+

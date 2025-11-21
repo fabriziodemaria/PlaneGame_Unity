@@ -1,66 +1,139 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BGLooping : MonoBehaviour {
+/// <summary>
+/// Handles infinite background scrolling by moving background tiles and changing
+/// sprites based on player score/altitude. Ensures proper Z-depth layering.
+/// </summary>
+public class BGLooping : MonoBehaviour
+{
+	// Background transition score thresholds
+	private const float FOREST_SCORE = 50f;
+	private const float DESERT_SCORE = 100f;
+	private const float SPACE_SCORE = 150f;
+	private const float SPACE_END_SCORE = 200f;
+	private const int SCROLL_TIME_OFFSET = 30;
 
-	/* Set background images here in Unity */
-	public Sprite toForest;
-	public Sprite forest;
-	public Sprite toDesert;
-	public Sprite desert;
-	public Sprite toSpace;
-	public Sprite space;
+	// Background sprites (set in Unity Inspector)
+	[Header("Background Sprites")]
+	[SerializeField] private Sprite toForest;
+	[SerializeField] private Sprite forest;
+	[SerializeField] private Sprite toDesert;
+	[SerializeField] private Sprite desert;
+	[SerializeField] private Sprite toSpace;
+	[SerializeField] private Sprite space;
 
 	private LabelsManager scoreKeeper;
-	private int scrollTimeOffset = 30;
-	private int BGIndex = 0;
+	private int bgIndex = 0;
 
-	void Start () {
-		scoreKeeper = GameObject.FindObjectOfType<LabelsManager>();
+	void Start()
+	{
+		// Cache score keeper reference
+		scoreKeeper = FindObjectOfType<LabelsManager>();
+		if (scoreKeeper == null)
+		{
+			Debug.LogError("BGLooping: LabelsManager not found!");
+			enabled = false;
+			return;
+		}
+
+		// Ensure this background has proper Z-depth and sorting
+		SpriteRenderer renderer = GetComponent<SpriteRenderer>();
+		if (renderer != null)
+		{
+			renderer.sortingLayerName = LayerConstants.SORT_BACKGROUND;
+			renderer.sortingOrder = LayerConstants.ORDER_BACKGROUND_BASE;
+		}
+
+		Vector3 pos = transform.position;
+		pos.z = LayerConstants.Z_BACKGROUND;
+		transform.position = pos;
 	}
 
-	void OnTriggerEnter2D(Collider2D collider) {
-
-		if (collider.tag == "Cloud" || collider.tag == "Wrench" || collider.tag == "Tank") {
+	void OnTriggerEnter2D(Collider2D collider)
+	{
+		// Destroy objects that reach the bottom of screen
+		if (collider.CompareTag("Cloud") || collider.CompareTag("Wrench") || collider.CompareTag("Tank"))
+		{
 			Destroy(collider.gameObject);
 			return;
 		}
 
-		float currentScore = scoreKeeper.Score;
+		// Update background sprite based on score
+		UpdateBackgroundSprite(collider);
 
-		/* Handle background changes */
-		if (currentScore > 50 - scrollTimeOffset && currentScore < 100 - scrollTimeOffset) {
-			if (BGIndex < 1) {
-				BGIndex++;
-				collider.GetComponent<SpriteRenderer>().sprite = toForest;
-			} else {
-				collider.GetComponent<SpriteRenderer>().sprite = forest;
-			}
-		}
-		if (currentScore >= 100 - scrollTimeOffset && currentScore < 150 - scrollTimeOffset) {
-			if (BGIndex < 2) {
-				BGIndex++;
-				collider.GetComponent<SpriteRenderer>().sprite = toDesert;
-			} else {
-				collider.GetComponent<SpriteRenderer>().sprite = desert;
-			}
-		}
-		if (currentScore >= 150 - scrollTimeOffset && currentScore < 200 - scrollTimeOffset) {
-			if (BGIndex < 3) {
-				BGIndex++;
-				collider.GetComponent<SpriteRenderer>().sprite = toSpace;
-			} else {
-				collider.GetComponent<SpriteRenderer>().sprite = space;
-			}
-		}
-		/* End background changes */
-		moveBGUp(collider);
+		// Move background tile up for infinite scrolling
+		MoveBGUp(collider);
 	}
 
-	void moveBGUp (Collider2D collider) {
-		float heigthOfBG = ((BoxCollider2D)collider).size.y;
+	private void UpdateBackgroundSprite(Collider2D collider)
+	{
+		float currentScore = scoreKeeper.Score;
+		SpriteRenderer renderer = collider.GetComponent<SpriteRenderer>();
+
+		if (renderer == null)
+			return;
+
+		// Ensure proper sorting layer for background sprites
+		renderer.sortingLayerName = LayerConstants.SORT_BACKGROUND;
+		renderer.sortingOrder = LayerConstants.ORDER_BACKGROUND_BASE;
+
+		// Transition to Forest (score 20-70)
+		if (currentScore > FOREST_SCORE - SCROLL_TIME_OFFSET &&
+		    currentScore < DESERT_SCORE - SCROLL_TIME_OFFSET)
+		{
+			if (bgIndex < 1)
+			{
+				bgIndex++;
+				renderer.sprite = toForest;
+			}
+			else
+			{
+				renderer.sprite = forest;
+			}
+		}
+		// Transition to Desert (score 70-120)
+		else if (currentScore >= DESERT_SCORE - SCROLL_TIME_OFFSET &&
+		         currentScore < SPACE_SCORE - SCROLL_TIME_OFFSET)
+		{
+			if (bgIndex < 2)
+			{
+				bgIndex++;
+				renderer.sprite = toDesert;
+			}
+			else
+			{
+				renderer.sprite = desert;
+			}
+		}
+		// Transition to Space (score 120-170)
+		else if (currentScore >= SPACE_SCORE - SCROLL_TIME_OFFSET &&
+		         currentScore < SPACE_END_SCORE - SCROLL_TIME_OFFSET)
+		{
+			if (bgIndex < 3)
+			{
+				bgIndex++;
+				renderer.sprite = toSpace;
+			}
+			else
+			{
+				renderer.sprite = space;
+			}
+		}
+	}
+
+	private void MoveBGUp(Collider2D collider)
+	{
+		BoxCollider2D boxCollider = collider as BoxCollider2D;
+		if (boxCollider == null)
+			return;
+
+		float heightOfBG = boxCollider.size.y;
 		Vector3 pos = collider.transform.position;
-		pos.y += heigthOfBG * 2;
+		pos.y += heightOfBG * 2f;
+		// Maintain consistent Z-depth for backgrounds
+		pos.z = LayerConstants.Z_BACKGROUND;
 		collider.transform.position = pos;
 	}
 }
+
