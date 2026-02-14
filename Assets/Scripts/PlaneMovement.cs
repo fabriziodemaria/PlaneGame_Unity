@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 /// <summary>
@@ -24,7 +24,7 @@ public class PlaneMovement : MonoBehaviour
 
 	[Header("Gameplay Settings")]
 	[SerializeField] private int maxLifes = 2;
-	[SerializeField] private bool godMode = false;
+	[SerializeField] public bool godMode = false;
 
 	[Header("Audio")]
 	[SerializeField] private GameObject hitClip;
@@ -235,7 +235,7 @@ public class PlaneMovement : MonoBehaviour
 			handlePlayerInput(clickPos, false);
 		}
 
-		if (clicked && (Time.time - clickTime) > LongPressSensitivity) {
+		if (clicked && (Time.time - clickTime) > longPressSensitivity) {
 			if (Input.GetMouseButton(0))
 				handlePlayerInput(Input.mousePosition.x, true);
 			else 
