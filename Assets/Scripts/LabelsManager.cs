@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
@@ -10,6 +10,9 @@ public class LabelsManager : MonoBehaviour {
 	public int bronzeScore;
 	public int silverScore;
 	public int goldScore;
+
+	[Tooltip("Downward offset for the score label and pause button (world units)")]
+	public float topUIOffsetY = -0.4f;
 
 	private float score = 0;
 	private float scoreOffset;
@@ -49,9 +52,33 @@ public class LabelsManager : MonoBehaviour {
 		SCLabel = GameObject.FindGameObjectWithTag ("ScoreLabel").GetComponent<Text>();
 		if (SCLabel != null) {
 			SCLabel.enabled = true;
+
+			// Make score render on top of all sprites (clouds, birds, etc.)
+			Canvas scoreCanvas = SCLabel.gameObject.AddComponent<Canvas>();
+			scoreCanvas.overrideSorting = true;
+			scoreCanvas.sortingOrder = 100;
+
+			// Shift score label down (below notch)
+			Vector3 scorePos = SCLabel.transform.localPosition;
+			scorePos.y += topUIOffsetY;
+			SCLabel.transform.localPosition = scorePos;
 		} else {
 			Debug.LogError("No Score label has been found!");
 			return;
+		}
+
+		// Shift pause button down (below notch) and render on top
+		GameObject pauseBtn = GameObject.Find("BackButton");
+		if (pauseBtn != null)
+		{
+			Canvas btnCanvas = pauseBtn.AddComponent<Canvas>();
+			btnCanvas.overrideSorting = true;
+			btnCanvas.sortingOrder = 100;
+			pauseBtn.AddComponent<GraphicRaycaster>();
+
+			Vector3 btnPos = pauseBtn.transform.localPosition;
+			btnPos.y += topUIOffsetY;
+			pauseBtn.transform.localPosition = btnPos;
 		}
 
 		playerPlane = GameObject.FindGameObjectWithTag ("Player");

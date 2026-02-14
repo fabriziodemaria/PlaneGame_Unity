@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
@@ -6,6 +6,8 @@ public class FuelBarController : MonoBehaviour {
 
 	public Image fuelBarImage;
 	public float fuelConsumptiom;
+	[Tooltip("Extra downward offset for the fuel bar group relative to its current position")]
+	public float fuelBarOffsetY = -1.2f;
 	private PlaneMovement planeController;
 	private Text NLabel;
 	private bool isLow;
@@ -13,6 +15,18 @@ public class FuelBarController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		fuelBarImage.fillAmount = 1f;
+
+		// Shift every sibling of the fuel bar image downward (bar, line, text)
+		Transform fuelParent = fuelBarImage.transform.parent;
+		if (fuelParent != null)
+		{
+			foreach (Transform child in fuelParent)
+			{
+				Vector3 pos = child.localPosition;
+				pos.y += fuelBarOffsetY;
+				child.localPosition = pos;
+			}
+		}
 		planeController = GameObject.FindObjectOfType<PlaneMovement>();
 		if (planeController == null) {
 			Debug.LogError("No plane found!");
