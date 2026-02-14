@@ -120,8 +120,8 @@ public class PauseManager : MonoBehaviour
 		GameObject overlay = CreateImage(canvasObj.transform, "Overlay",
 			new Color(0f, 0f, 0f, 0.35f), Vector2.zero, Vector2.one);
 
-		// Band color matching main menu buttons (slightly darker sky blue)
-		Color bandColor = new Color(0.25f, 0.56f, 0.70f, 1f);
+		// Semi-transparent gray bands
+		Color bandColor = new Color(0.3f, 0.3f, 0.3f, 0.6f);
 
 		// Title — large text, upper area
 		CreateLabel(overlay.transform, "Title", "PAUSED", 80, FontStyle.Bold,
