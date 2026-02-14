@@ -24,7 +24,7 @@ public class PlaneMovement : MonoBehaviour
 
 	[Header("Gameplay Settings")]
 	[SerializeField] private int maxLifes = 2;
-	[SerializeField] public bool godMode = false;
+	[System.NonSerialized] public bool godMode = false;
 
 	[Header("Audio")]
 	[SerializeField] private GameObject hitClip;
