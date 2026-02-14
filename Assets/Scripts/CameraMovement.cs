@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 /// <summary>
@@ -26,7 +26,7 @@ public class CameraMovement : MonoBehaviour
 		offsetY = transform.position.y - planeTransform.position.y;
 	}
 
-	void LateUpdate()
+	void Update()
 	{
 		if (planeTransform == null)
 			return;

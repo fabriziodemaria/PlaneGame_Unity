@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 /// <summary>
@@ -48,7 +48,6 @@ public class ArrowsScript : MonoBehaviour
 			if (arrow != null)
 			{
 				rightArrowRenderers[i] = arrow.GetComponent<SpriteRenderer>();
-				SetupArrowLayer(rightArrowRenderers[i]);
 			}
 			else
 			{
@@ -63,7 +62,6 @@ public class ArrowsScript : MonoBehaviour
 			if (arrow != null)
 			{
 				leftArrowRenderers[i] = arrow.GetComponent<SpriteRenderer>();
-				SetupArrowLayer(leftArrowRenderers[i]);
 			}
 			else
 			{
@@ -71,29 +69,17 @@ public class ArrowsScript : MonoBehaviour
 			}
 		}
 
-		// Set this container's Z position for UI layer
-		Vector3 pos = transform.position;
-		pos.z = LayerConstants.Z_UI_WORLD;
-		transform.position = pos;
 	}
 
-	private void SetupArrowLayer(SpriteRenderer renderer)
-	{
-		if (renderer != null)
-		{
-			renderer.sortingLayerName = LayerConstants.SORT_UI;
-			renderer.sortingOrder = LayerConstants.ORDER_UI_ARROWS;
-		}
-	}
 
-	void LateUpdate()
+
+	void Update()
 	{
-		// Follow plane's X and Y position, but maintain UI Z-depth
+		// Follow plane's position
 		Vector3 pos = transform.position;
 		pos.x = planeTransform.position.x;
 		pos.y = planeTransform.position.y;
-		// NOTE: Z is NOT synced with plane - UI should stay at UI layer depth
-		pos.z = LayerConstants.Z_UI_WORLD;
+		pos.z = planeTransform.position.z;
 		transform.position = pos;
 	}
 
