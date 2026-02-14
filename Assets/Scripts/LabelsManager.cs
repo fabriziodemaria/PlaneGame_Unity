@@ -36,6 +36,11 @@ public class LabelsManager : MonoBehaviour {
 		GOLabel = GameObject.FindGameObjectWithTag ("GameOverLabel").GetComponent<Text>();
 		if (GOLabel != null) {
 			GOLabel.enabled = false;
+
+			// Render game over text on top of all sprites
+			Canvas goCanvas = GOLabel.gameObject.AddComponent<Canvas>();
+			goCanvas.overrideSorting = true;
+			goCanvas.sortingOrder = 100;
 		} else {
 			Debug.LogError("No Game Over label has been found!");
 			return;
@@ -102,6 +107,16 @@ public class LabelsManager : MonoBehaviour {
 			return;
 
 		RetryButton.GetComponent<Button>().gameObject.SetActive(true);
+
+		// Add sorting override now that the button is active
+		if (RetryButton.GetComponent<Canvas>() == null)
+		{
+			Canvas retryCanvas = RetryButton.AddComponent<Canvas>();
+			retryCanvas.overrideSorting = true;
+			retryCanvas.sortingOrder = 100;
+			RetryButton.AddComponent<GraphicRaycaster>();
+		}
+
 		SCLabel.enabled = false;
 
 		if (score > PlayerPrefs.GetFloat("highscore", 0)) {
