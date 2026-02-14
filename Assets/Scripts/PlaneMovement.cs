@@ -38,7 +38,6 @@ public class PlaneMovement : MonoBehaviour
 	private bool clicked;
 	private float clickTime;
 	private float clickPos;
-	private bool isBackButtonPressed = false;
 
 	// Cached references
 	private FuelBarController fuelBarControl;
@@ -111,6 +110,13 @@ public class PlaneMovement : MonoBehaviour
 		if (labelsManager == null)
 		{
 			Debug.LogWarning("PlaneMovement: LabelsManager not found!");
+		}
+
+		// Create PauseManager if one does not exist yet
+		if (PauseManager.Instance == null)
+		{
+			GameObject pauseObj = new GameObject("PauseManager");
+			pauseObj.AddComponent<PauseManager>();
 		}
 
 		// Calculate lateral boundaries
@@ -205,6 +211,9 @@ public class PlaneMovement : MonoBehaviour
 	}
 
 	void Update() {
+		// Skip all gameplay logic while paused
+		if (PauseManager.Instance != null && PauseManager.Instance.IsPaused) return;
+
 		/* Moviola effect */
 		if (moviolaFrames > 90) {
 			moviolaFrames--;
@@ -219,7 +228,7 @@ public class PlaneMovement : MonoBehaviour
 		}
 		/* End Moviola effect */
 
-		if (isBackButtonPressed || isDead) return;
+		if (isDead) return;
 
 		if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetMouseButtonDown(0)) {
 			clicked = true;
@@ -346,10 +355,11 @@ public class PlaneMovement : MonoBehaviour
 	}
 
 	public void bbPressed() {
-		isBackButtonPressed = true;
+		if (PauseManager.Instance != null)
+			PauseManager.Instance.TogglePause();
 	}
 
 	public void bbUnpressed() {
-		isBackButtonPressed = false;
+		// No longer needed — pause is toggled by bbPressed
 	}
 }

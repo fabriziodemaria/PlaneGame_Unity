@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 /// <summary>
@@ -36,18 +36,6 @@ public class BGLooping : MonoBehaviour
 			enabled = false;
 			return;
 		}
-
-		// Ensure this background has proper Z-depth and sorting
-		SpriteRenderer renderer = GetComponent<SpriteRenderer>();
-		if (renderer != null)
-		{
-			renderer.sortingLayerName = LayerConstants.SORT_BACKGROUND;
-			renderer.sortingOrder = LayerConstants.ORDER_BACKGROUND_BASE;
-		}
-
-		Vector3 pos = transform.position;
-		pos.z = LayerConstants.Z_BACKGROUND;
-		transform.position = pos;
 	}
 
 	void OnTriggerEnter2D(Collider2D collider)
@@ -73,10 +61,6 @@ public class BGLooping : MonoBehaviour
 
 		if (renderer == null)
 			return;
-
-		// Ensure proper sorting layer for background sprites
-		renderer.sortingLayerName = LayerConstants.SORT_BACKGROUND;
-		renderer.sortingOrder = LayerConstants.ORDER_BACKGROUND_BASE;
 
 		// Transition to Forest (score 20-70)
 		if (currentScore > FOREST_SCORE - SCROLL_TIME_OFFSET &&
@@ -131,8 +115,7 @@ public class BGLooping : MonoBehaviour
 		float heightOfBG = boxCollider.size.y;
 		Vector3 pos = collider.transform.position;
 		pos.y += heightOfBG * 2f;
-		// Maintain consistent Z-depth for backgrounds
-		pos.z = LayerConstants.Z_BACKGROUND;
+		pos.z = 1f; // keep background behind clouds and gameplay objects
 		collider.transform.position = pos;
 	}
 }
